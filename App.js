@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -8,6 +8,15 @@ import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
 
 const Stack = createStackNavigator();
+
+const LogoTitle = () => {
+    return (
+        <Image
+            style={{ width: 50, height: 50 }}
+            source={require("./logo.png")}
+        />
+    );
+};
 
 export default function App() {
     return (

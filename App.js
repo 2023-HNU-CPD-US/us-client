@@ -23,14 +23,14 @@ export default function App() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen
-                    name="Home"
+                    name="홈"
                     component={HomeScreen}
                     options={{
                         headerTitle: (props) => <LogoTitle {...props} />,
                     }}
                 />
                 <Stack.Screen
-                    name="Write"
+                    name="작성하기"
                     component={WriteScreen}
                     options={{
                         headerTitle: (props) => <LogoTitle {...props} />,

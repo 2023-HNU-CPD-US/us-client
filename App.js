@@ -12,8 +12,8 @@ const Stack = createStackNavigator();
 const LogoTitle = () => {
     return (
         <Image
-            style={{ width: 50, height: 50 }}
-            source={require("./logo.png")}
+            style={{ width: 40, height: 40 }}
+            source={require("./assets/logo.png")}
         />
     );
 };
@@ -26,10 +26,16 @@ export default function App() {
                     name="Home"
                     component={HomeScreen}
                     options={{
-                        title: "홈 화면",
+                        headerTitle: (props) => <LogoTitle {...props} />,
                     }}
                 />
-                <Stack.Screen name="Write" component={WriteScreen} />
+                <Stack.Screen
+                    name="Write"
+                    component={WriteScreen}
+                    options={{
+                        headerTitle: (props) => <LogoTitle {...props} />,
+                    }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

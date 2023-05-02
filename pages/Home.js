@@ -3,10 +3,23 @@ import { StyleSheet, View, Text } from "react-native";
 
 import { Feather } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
+import Folder from "../components/Folder";
+import { ScrollView } from "react-native";
 
 function Home({ navigation }) {
     return (
         <View style={styles.home}>
+            <ScrollView style={styles.list}>
+                <View style={styles.listRow}>
+                    <Folder name="Food Recipes"></Folder>
+                    <Folder name="Project"></Folder>
+                </View>
+                <View style={styles.listRow}>
+                    <Folder name="Secret"></Folder>
+                    <Folder name="Reference"></Folder>
+                </View>
+            </ScrollView>
+
             <View style={styles.menu}>
                 <TouchableOpacity
                     activeOpacity="0.6"
@@ -17,6 +30,7 @@ function Home({ navigation }) {
                         borderRightWidth: 1,
                         borderRightColor: "#eee",
                     }}
+                    onPress={() => navigation.navigate("작성하기")}
                 >
                     <View>
                         <Feather name="file-plus" size={24} color="black" />
@@ -29,7 +43,7 @@ function Home({ navigation }) {
                         borderTopRightRadius: 10,
                         borderBottomRightRadius: 10,
                     }}
-                    onPress={() => navigation.navigate("작성하기")}
+                    // onPress={() => navigation.navigate("작성하기")}
                 >
                     <View>
                         <Feather name="folder-plus" size={24} color="black" />
@@ -44,6 +58,15 @@ const styles = StyleSheet.create({
     home: {
         width: "100%",
         height: "100%",
+    },
+    list: {
+        width: "100%",
+        paddingHorizontal: 20,
+    },
+    listRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 20,
     },
     menu: {
         position: "absolute",

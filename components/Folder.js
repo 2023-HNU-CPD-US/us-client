@@ -7,7 +7,7 @@ function Folder({ name }) {
     return (
         <TouchableOpacity activeOpacity="0.6" style={styles.folder}>
             <TouchableOpacity activeOpacity="0.6" style={styles.folderMenu}>
-                <Entypo name="dots-three-vertical" size={20} color="#777" />
+                <Entypo name="dots-three-vertical" size={18} color="#777" />
             </TouchableOpacity>
             <View>
                 <Image
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         right: 10,
     },
     folderName: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: 600,
         marginTop: 5,
     },

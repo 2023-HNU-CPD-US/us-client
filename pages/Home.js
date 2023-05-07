@@ -1,10 +1,16 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-
+import {
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
+    ScrollView,
+    TouchableOpacity,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native";
+
 import Folder from "../components/Folder";
-import { ScrollView } from "react-native";
+import Note from "../components/Note";
 
 function Home({ navigation }) {
     return (
@@ -17,6 +23,9 @@ function Home({ navigation }) {
                 <View style={styles.listRow}>
                     <Folder name="Secret"></Folder>
                     <Folder name="Reference"></Folder>
+                </View>
+                <View style={styles.listRow}>
+                    <Note></Note>
                 </View>
             </ScrollView>
 

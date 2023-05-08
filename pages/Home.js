@@ -1,20 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     StyleSheet,
     View,
     Text,
     TextInput,
+    Button,
     ScrollView,
     TouchableOpacity,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
 
 function Home({ navigation }) {
+    const [searchText, setSearchText] = useState("");
+
+    const handleSearch = () => {
+        // 검색 버튼이 눌렸을 때 수행할 동작
+        console.log("검색어:", searchText);
+        // 검색 기능을 추가하려면 여기에 검색 로직을 작성하면 됩니다.
+    };
+
     return (
         <View style={styles.home}>
+            <View
+                style={{
+                    paddingHorizontal: 20,
+                    paddingTop: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                }}
+            >
+                <TextInput
+                    style={{
+                        flex: 9,
+                        height: 40,
+                        backgroundColor: "white",
+                        paddingHorizontal: 10,
+                        borderRadius: 5,
+                    }}
+                    placeholder="검색어를 입력하세요."
+                    onChangeText={(text) => setSearchText(text)}
+                    value={searchText}
+                />
+                <FontAwesome
+                    name="sort-amount-desc"
+                    size={20}
+                    color="#555"
+                    style={{
+                        flex: 1,
+                        textAlign: "center",
+                    }}
+                />
+            </View>
+
             <ScrollView style={styles.list}>
                 <View style={styles.listRow}>
                     <Folder name="Food Recipes"></Folder>
@@ -75,7 +115,7 @@ const styles = StyleSheet.create({
     listRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 20,
+        marginTop: 15,
     },
     menu: {
         position: "absolute",

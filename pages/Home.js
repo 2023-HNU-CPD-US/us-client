@@ -7,7 +7,7 @@ function Home({ navigation }) {
             <Text>Home Screen</Text>
             <Button
                 title="Go to Write"
-                onPress={() => navigation.navigate("Write")}
+                onPress={() => navigation.navigate("Camera")}
             />
         </View>
     );

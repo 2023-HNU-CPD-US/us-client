@@ -6,6 +6,8 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
+import SaveScreen from "./pages/Save";
+import CameraScreen from "./pages/expo";
 
 const Stack = createStackNavigator();
 
@@ -21,6 +23,8 @@ export default function App() {
                     }}
                 />
                 <Stack.Screen name="Write" component={WriteScreen} />
+                <Stack.Screen name="Save" component={SaveScreen} />
+                <Stack.Screen name="Camera" component={CameraScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

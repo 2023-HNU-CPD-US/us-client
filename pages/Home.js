@@ -34,7 +34,7 @@ function Home({ navigation }) {
             >
                 <TextInput
                     style={{
-                        flex: 9,
+                        flex: 8.75,
                         height: 40,
                         backgroundColor: "white",
                         paddingHorizontal: 10,
@@ -44,15 +44,20 @@ function Home({ navigation }) {
                     onChangeText={(text) => setSearchText(text)}
                     value={searchText}
                 />
-                <FontAwesome
-                    name="sort-amount-desc"
-                    size={20}
-                    color="#555"
+                <TouchableOpacity
                     style={{
-                        flex: 1,
-                        textAlign: "center",
+                        flex: 1.25,
                     }}
-                />
+                >
+                    <FontAwesome
+                        name="sort-amount-desc"
+                        size={24}
+                        color="#555"
+                        style={{
+                            textAlign: "center",
+                        }}
+                    />
+                </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.list}>

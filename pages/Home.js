@@ -34,7 +34,7 @@ function Home({ navigation }) {
             >
                 <TextInput
                     style={{
-                        flex: 8.75,
+                        flex: 9,
                         height: 40,
                         backgroundColor: "white",
                         paddingHorizontal: 10,
@@ -42,16 +42,17 @@ function Home({ navigation }) {
                     }}
                     placeholder="검색어를 입력하세요."
                     onChangeText={(text) => setSearchText(text)}
+                    returnKeyType="search"
                     value={searchText}
                 />
                 <TouchableOpacity
                     style={{
-                        flex: 1.25,
+                        flex: 1,
                     }}
                 >
                     <FontAwesome
                         name="sort-amount-desc"
-                        size={24}
+                        size={20}
                         color="#555"
                         style={{
                             textAlign: "center",

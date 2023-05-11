@@ -1,53 +1,75 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
-
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 
 function Save({ navigation }) {
+    const [loading, setLoading] = useState(true);
+    const [completed, setCompleted] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false);
+            setCompleted(true);
+            setTimeout(() => {
+                navigation.navigate("홈"); 
+            }, 1000); 
+        }, 3000);
+    }, []);
+
     return (
-      <View style={{flex:1}}>
-      <View style={styles.save_container}>
-          <View style={styles.save_top}>
-          <Text> 
-              로고
-          </Text>
-          </View>
-      </View>
-      <View style= {styles.save_top_body}>
-      <FontAwesome style={{paddingVertical: 80}} name="circle-thin" size={350} color="#ced4da" />
-            <Text style={{ marginVertical: -265, fontSize: 38}}>
-            0%
-            </Text>
-            </View>
-            <View style={{alignItems: "center"}}>
-            <Text style={{ marginVertical: -265, fontSize: 22}}>
-            저장 중입니다.
-            </Text>
-            </View>
-      </View>
+        <View style={styles.container}>
+            {loading ? (
+                <View style={styles.loading}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text style={styles.loadingText}>저장 중입니다.</Text>
+                </View>
+            ) : completed ? (
+                <View style={styles.completed}>
+                    <Ionicons name="checkmark-circle" size={72} color="green" />
+                    <Text style={styles.completedText}>저장이 완료되었습니다!</Text>
+                </View>
+            ) : (
+                <View style={styles.content}>
+                    <Text style={styles.text}>내용이 로딩되었습니다!</Text>
+                </View>
+            )}
+        </View>
     );
 }
 
 export default Save;
 
 const styles = StyleSheet.create({
-  save_container: {
-      flex: 1,
-      backgroundColor: "white"
-  },
-  save_top: {
-      flex: 1,
-      backgroundColor: "#e9ecef",
-      alignItems : "center",
-      justifyContent:"center",
-      flexDirection: "row",
-      width: "100%"
-  },
-  save_top_body: {
-      flex:15,
-      backgroundColor: "white",
-      width: "100%", 
-      alignItems: "center"
-  }
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#fff"
+    },
+    loading: {
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    loadingText: {
+        marginTop: 20,
+        fontSize: 22
+    },
+    content: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    text: {
+        fontSize: 24
+    },
+    completed: {
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    completedText: {
+        marginTop: 20,
+        fontSize: 22,
+        color: "green"
+    }
 });

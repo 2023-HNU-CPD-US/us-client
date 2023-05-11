@@ -1,7 +1,6 @@
-import React, {useState, useCallback, useEffect} from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, ActionSheetIOS, Keyboard, TouchableWithoutFeedback } from "react-native";
-import UploadModeModal from "./UploadModeModal";
-import { launchImageLibrary, launchCamera } from "react-native-image-picker";
+import React, {useState} from "react";
+import { View, StyleSheet, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from "react-native";
+
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -11,57 +10,15 @@ import { Feather } from '@expo/vector-icons';
 function Write({ navigation }) {
         const [note, setNote] = useState('');
         const [textInputHeight, setTextInputHeight] = useState(0);
-        const handleBlur = () => {
-            Keyboard.dismiss();
-          };
+        const dismissKeyboard = () => {
+          Keyboard.dismiss();
+        };
         const imagePickerOption = {
             mediaType: "photo",
             maxWidth: 768,
             maxHeight: 768,
             includeBase64: Platform.OS === "android",
         };
-        const handlePress = () => {
-            Linking.openURL('photos-redirect://');
-          };
-          const onPickImage = useCallback((res) => { 
-            if (res.didCancel || !res) {
-              return;
-            }
-            console.log("PickImage", res);
-          }, []);
-          
-          const onLaunchCamera = useCallback(() => {
-            launchCamera(imagePickerOption, onPickImage);
-          }, [onPickImage]);
-          
-          const onLaunchImageLibrary = useCallback(() => {
-            launchImageLibrary(imagePickerOption, onPickImage);
-          }, [onPickImage]);
-        
-          const [modalVisible, setModalVisible] = useState(false);
-          
-          const modalOpen = useCallback(() => {
-            if (Platform.OS === "android") { 
-              setModalVisible(true); 
-            } else { 
-              ActionSheetIOS.showActionSheetWithOptions(
-                {
-                  options: ["카메라로 촬영하기", "사진 선택하기", "취소"],
-                  cancelButtonIndex: 2,
-                },
-                (buttonIndex) => {
-                  if (buttonIndex === 0) {
-                    onLaunchCamera();
-                  } else if (buttonIndex === 1) {
-                    onLaunchImageLibrary();
-                  }
-                }
-              );
-            }
-          }, [onLaunchCamera, onLaunchImageLibrary]);
-          const dismissKeyboard = () => {
-            Keyboard.dismiss();
-          };
 
     return (
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -69,15 +26,11 @@ function Write({ navigation }) {
             <View style={styles.container}>
                 <View style={styles.top}>
 
-                    <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("홈")}>
                         <AntDesign name="left" size={24} color="black" />
                     </TouchableOpacity>
-                
-                <Text> 
-                    로고
-                </Text>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Save")}>
+                <TouchableOpacity onPress={() => navigation.navigate("저장")}>
                     <Ionicons name="checkmark" size={24} color="black" />
                 </TouchableOpacity>
 
@@ -114,13 +67,12 @@ function Write({ navigation }) {
                 </TextInput>
             </View>
             <View>
-            <TouchableOpacity onPress={modalOpen}>
-                            <Feather style={{marginLeft: 330, marginVertical: -60}}name="camera" size={38} color="black" />
-                            <UploadModeModal 
-                            visible={modalVisible} 
-                            onClose={() => setModalVisible(false)}
-                            onLaunchCamera={onLaunchCamera}
-                            onLaunchImageLibrary={onLaunchImageLibrary} />
+            <TouchableOpacity onPress={() => navigation.navigate("카메라")}>
+                            <Feather style={{marginLeft: 330, marginVertical: -60}}
+                            name="camera" 
+                            size={38} 
+                            color="black" />
+                            
                 </TouchableOpacity> 
             </View>
 

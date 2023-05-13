@@ -10,7 +10,7 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./MenuModal";
 
-function Note() {
+function Note({ title }) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const modalOpen = useCallback(() => {
@@ -45,7 +45,7 @@ function Note() {
                 />
             </TouchableOpacity>
             <View>
-                <Text style={styles.noteName}>제목</Text>
+                <Text style={styles.noteName}>{title}</Text>
                 <Text style={styles.noteContents}>
                     Lorem Ipsum is simply dummy text of the printing and ...
                 </Text>

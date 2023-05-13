@@ -9,17 +9,48 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
 
 function Home({ navigation }) {
+    const folderData = useSelector((state) => state.folderReducer.folders);
+    const noteData = useSelector((state) => state.noteReducer.notes);
+    const data = [...folderData, ...noteData];
+    console.log(data);
+
     const [searchText, setSearchText] = useState("");
 
     const handleSearch = () => {
-        // 검색 버튼이 눌렸을 때 수행할 동작
         console.log("검색어:", searchText);
-        // 검색 기능을 추가하려면 여기에 검색 로직을 작성하면 됩니다.
+    };
+
+    const renderPairs = () => {
+        const pairs = [];
+        for (let i = 0; i < data.length; i += 2) {
+            const first = data[i];
+            const second = data[i + 1];
+            console.log(first);
+            console.log(second);
+            const pair = (
+                <View key={i} style={styles.listRow}>
+                    {first.type == "folder" ? (
+                        <Folder name={first.name} />
+                    ) : (
+                        <Note title={first.title} />
+                    )}
+                    {second &&
+                        (second.type == "folder" ? (
+                            <Folder name={second.name} />
+                        ) : (
+                            <Note title={second.title} />
+                        ))}
+                </View>
+            );
+            pairs.push(pair);
+        }
+        return pairs;
     };
 
     return (
@@ -61,19 +92,7 @@ function Home({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.list}>
-                <View style={styles.listRow}>
-                    <Folder name="Food Recipes"></Folder>
-                    <Folder name="Project"></Folder>
-                </View>
-                <View style={styles.listRow}>
-                    <Folder name="Secret"></Folder>
-                    <Folder name="Reference"></Folder>
-                </View>
-                <View style={styles.listRow}>
-                    <Note></Note>
-                </View>
-            </ScrollView>
+            <ScrollView style={styles.list}>{renderPairs()}</ScrollView>
 
             <View style={styles.menu}>
                 <TouchableOpacity

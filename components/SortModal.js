@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
 
-export default function MenuModal({ visible, onClose }) {
+export default function SortModal({ visible, onClose }) {
     return (
         <Modal
             visible={visible}
@@ -22,7 +22,7 @@ export default function MenuModal({ visible, onClose }) {
                             onClose();
                         }}
                     >
-                        <Text style={styles.actionText}>이름 변경</Text>
+                        <Text style={styles.actionText}>최신순</Text>
                     </Pressable>
                     <Pressable
                         style={styles.actionButton}
@@ -31,7 +31,7 @@ export default function MenuModal({ visible, onClose }) {
                             onClose();
                         }}
                     >
-                        <Text style={styles.actionText}>삭제</Text>
+                        <Text style={styles.actionText}>이름순</Text>
                     </Pressable>
                 </View>
             </Pressable>

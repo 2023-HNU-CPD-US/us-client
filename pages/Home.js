@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
     StyleSheet,
     View,
@@ -7,18 +7,40 @@ import {
     Button,
     ScrollView,
     TouchableOpacity,
+    ActionSheetIOS,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
+import SortModal from "../components/SortModal";
 
 function Home({ navigation }) {
     const folderData = useSelector((state) => state.folderReducer.folders);
     const noteData = useSelector((state) => state.noteReducer.notes);
     const data = [...folderData, ...noteData];
     console.log(data);
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const modalOpen = useCallback(() => {
+        if (Platform.OS === "android") {
+            setModalVisible(true);
+        } else {
+            ActionSheetIOS.showActionSheetWithOptions(
+                {
+                    options: ["최신순", "이름순", "취소"],
+                    cancelButtonIndex: 2,
+                },
+                (buttonIndex) => {
+                    if (buttonIndex === 0) {
+                    } else if (buttonIndex === 1) {
+                    }
+                }
+            );
+        }
+    }, []);
 
     const [searchText, setSearchText] = useState("");
 
@@ -31,8 +53,6 @@ function Home({ navigation }) {
         for (let i = 0; i < data.length; i += 2) {
             const first = data[i];
             const second = data[i + 1];
-            console.log(first);
-            console.log(second);
             const pair = (
                 <View key={i} style={styles.listRow}>
                     {first.type == "folder" ? (
@@ -80,6 +100,7 @@ function Home({ navigation }) {
                     style={{
                         flex: 1,
                     }}
+                    onPress={modalOpen}
                 >
                     <FontAwesome
                         name="sort-amount-desc"
@@ -88,6 +109,10 @@ function Home({ navigation }) {
                         style={{
                             textAlign: "center",
                         }}
+                    />
+                    <SortModal
+                        visible={modalVisible}
+                        onClose={() => setModalVisible(false)}
                     />
                 </TouchableOpacity>
             </View>

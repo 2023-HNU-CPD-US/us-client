@@ -2,11 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     folders: [
-        // { id: 1, type: "folder", name: "Food Recipes" },
-        // { id: 2, type: "folder", name: "Project" },
-        // { id: 3, type: "folder", name: "Secret" },
-        // { id: 4, type: "folder", name: "Reference" },
-        // { id: 5, type: "folder", name: "Test" },
+        { id: 1, type: "folder", name: "Food Recipes" },
+        { id: 2, type: "folder", name: "Project" },
+        { id: 3, type: "folder", name: "Secret" },
+        { id: 4, type: "folder", name: "Reference" },
+        { id: 5, type: "folder", name: "Test" },
     ],
 };
 

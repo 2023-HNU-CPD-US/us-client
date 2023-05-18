@@ -75,13 +75,7 @@ function Home({ navigation }) {
                 pairs.push(pair);
             }
         } else {
-            const pair = (
-                <Image
-                    style={{ flex: 1 }}
-                    // resizeMode="contain"
-                    source={require("../assets/nodata.png")}
-                />
-            );
+            const pair = <NoDataImage />;
             pairs.push(pair);
         }
         return pairs;
@@ -131,17 +125,7 @@ function Home({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            {/* <ScrollView style={styles.list}>{renderPairs()}</ScrollView> */}
-
-            <ScrollView style={styles.list}>
-                <NoDataImage />
-                {/* <Image
-                    style={{ width: "80%" }}
-                    resizeMode="contain"
-                    source={require("../assets/nodata.png")}
-                />
-                <Text>새로운 노트를 추가해 보세요.</Text> */}
-            </ScrollView>
+            <ScrollView style={styles.list}>{renderPairs()}</ScrollView>
 
             <View style={styles.menu}>
                 <TouchableOpacity

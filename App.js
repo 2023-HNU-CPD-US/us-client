@@ -1,11 +1,17 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Image } from "react-native";
 
+import { Provider } from "react-redux";
+import { createStore } from "redux";
+import rootReducer from "./reducers/index";
+
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 
 import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
+
+const store = createStore(rootReducer);
 
 const Stack = createStackNavigator();
 
@@ -20,32 +26,25 @@ const LogoTitle = () => {
 
 export default function App() {
     return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen
-                    name="홈"
-                    component={HomeScreen}
-                    options={{
-                        headerTitle: (props) => <LogoTitle {...props} />,
-                    }}
-                />
-                <Stack.Screen
-                    name="작성하기"
-                    component={WriteScreen}
-                    options={{
-                        headerTitle: (props) => <LogoTitle {...props} />,
-                    }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Provider store={store}>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name="홈"
+                        component={HomeScreen}
+                        options={{
+                            headerTitle: (props) => <LogoTitle {...props} />,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="작성하기"
+                        component={WriteScreen}
+                        options={{
+                            headerTitle: (props) => <LogoTitle {...props} />,
+                        }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </Provider>
     );
 }
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: "#fff",
-//         alignItems: "center",
-//         justifyContent: "center",
-//     },
-// });

@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     notes: [
-        { id: 1, type: "note", title: "Note 1", content: "Content 1" },
-        { id: 2, type: "note", title: "Note 2", content: "Content 2" },
+        // { id: 1, type: "note", title: "Note 1", content: "Content 1" },
+        // { id: 2, type: "note", title: "Note 2", content: "Content 2" },
     ],
 };
 

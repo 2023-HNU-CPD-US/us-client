@@ -5,6 +5,7 @@ import {
     Text,
     TextInput,
     Button,
+    Image,
     ScrollView,
     TouchableOpacity,
     ActionSheetIOS,
@@ -15,6 +16,7 @@ import { useSelector } from "react-redux";
 import Folder from "../components/Folder";
 import Note from "../components/Note";
 import SortModal from "../components/SortModal";
+import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
     const folderData = useSelector((state) => state.folderReducer.folders);
@@ -50,23 +52,35 @@ function Home({ navigation }) {
 
     const renderPairs = () => {
         const pairs = [];
-        for (let i = 0; i < data.length; i += 2) {
-            const first = data[i];
-            const second = data[i + 1];
-            const pair = (
-                <View key={i} style={styles.listRow}>
-                    {first.type == "folder" ? (
-                        <Folder name={first.name} />
-                    ) : (
-                        <Note title={first.title} />
-                    )}
-                    {second &&
-                        (second.type == "folder" ? (
-                            <Folder name={second.name} />
+        console.log(data.length);
+        if (data.length) {
+            for (let i = 0; i < data.length; i += 2) {
+                const first = data[i];
+                const second = data[i + 1];
+                const pair = (
+                    <View key={i} style={styles.listRow}>
+                        {first.type == "folder" ? (
+                            <Folder name={first.name} />
                         ) : (
-                            <Note title={second.title} />
-                        ))}
-                </View>
+                            <Note title={first.title} />
+                        )}
+                        {second &&
+                            (second.type == "folder" ? (
+                                <Folder name={second.name} />
+                            ) : (
+                                <Note title={second.title} />
+                            ))}
+                    </View>
+                );
+                pairs.push(pair);
+            }
+        } else {
+            const pair = (
+                <Image
+                    style={{ flex: 1 }}
+                    // resizeMode="contain"
+                    source={require("../assets/nodata.png")}
+                />
             );
             pairs.push(pair);
         }
@@ -117,7 +131,17 @@ function Home({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.list}>{renderPairs()}</ScrollView>
+            {/* <ScrollView style={styles.list}>{renderPairs()}</ScrollView> */}
+
+            <ScrollView style={styles.list}>
+                <NoDataImage />
+                {/* <Image
+                    style={{ width: "80%" }}
+                    resizeMode="contain"
+                    source={require("../assets/nodata.png")}
+                />
+                <Text>새로운 노트를 추가해 보세요.</Text> */}
+            </ScrollView>
 
             <View style={styles.menu}>
                 <TouchableOpacity

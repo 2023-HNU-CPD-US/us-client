@@ -11,7 +11,8 @@ import {
     ActionSheetIOS,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { add } from "../reducers/folderReducer";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
@@ -19,13 +20,20 @@ import SortModal from "../components/SortModal";
 import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
-    const folderData = useSelector((state) => state.folderReducer.folders);
-    const noteData = useSelector((state) => state.noteReducer.notes);
+    const folderData = useSelector((state) =>
+        state.folderReducer.folders
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+    );
+    const noteData = useSelector((state) =>
+        state.noteReducer.notes
+            .slice()
+            .sort((a, b) => a.title.localeCompare(b.title))
+    );
     const data = [...folderData, ...noteData];
     console.log(data);
 
     const [modalVisible, setModalVisible] = useState(false);
-
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
             setModalVisible(true);
@@ -45,9 +53,17 @@ function Home({ navigation }) {
     }, []);
 
     const [searchText, setSearchText] = useState("");
-
     const handleSearch = () => {
         console.log("검색어:", searchText);
+    };
+
+    const dispatch = useDispatch();
+    const handleAddFolder = () => {
+        const newFolder = {
+            id: Date.now(), // 임의의 고유 ID 생성
+            name: "새 폴더",
+        };
+        dispatch(add(newFolder));
     };
 
     const renderPairs = () => {
@@ -60,15 +76,15 @@ function Home({ navigation }) {
                 const pair = (
                     <View key={i} style={styles.listRow}>
                         {first.type == "folder" ? (
-                            <Folder name={first.name} />
+                            <Folder id={first.id} name={first.name} />
                         ) : (
-                            <Note title={first.title} />
+                            <Note id={first.id} title={first.title} />
                         )}
                         {second &&
                             (second.type == "folder" ? (
-                                <Folder name={second.name} />
+                                <Folder id={first.id} name={second.name} />
                             ) : (
-                                <Note title={second.title} />
+                                <Note id={first.id} title={second.title} />
                             ))}
                     </View>
                 );
@@ -150,7 +166,7 @@ function Home({ navigation }) {
                         borderTopRightRadius: 10,
                         borderBottomRightRadius: 10,
                     }}
-                    // onPress={() => navigation.navigate("작성하기")}
+                    onPress={() => handleAddFolder()}
                 >
                     <View>
                         <Feather name="folder-plus" size={24} color="black" />
@@ -169,6 +185,7 @@ const styles = StyleSheet.create({
     list: {
         width: "100%",
         paddingHorizontal: 20,
+        marginBottom: 90,
     },
     listRow: {
         flexDirection: "row",

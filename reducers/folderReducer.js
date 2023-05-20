@@ -2,11 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     folders: [
-        { id: 1, type: "folder", name: "Food Recipes" },
-        { id: 2, type: "folder", name: "Project" },
-        { id: 3, type: "folder", name: "Secret" },
-        { id: 4, type: "folder", name: "Reference" },
-        { id: 5, type: "folder", name: "Test" },
+        { id: 1384602775573, type: "folder", name: "Food Recipes" },
+        { id: 1651612775573, type: "folder", name: "Project" },
+        { id: 1684602781573, type: "folder", name: "Secret" },
+        { id: 1812137775573, type: "folder", name: "Reference" },
+        { id: 8333602775573, type: "folder", name: "Test" },
     ],
 };
 
@@ -15,7 +15,12 @@ const folders = createSlice({
     initialState,
     reducers: {
         add: (state, action) => {
-            // state.unshift({ text: action.payload.text, id: action.payload.id }); // redux toolkit을 사용하면 state를 mutate해도 됨
+            console.log(action.payload);
+            state.folders.unshift({
+                id: action.payload.id,
+                type: "folder",
+                name: action.payload.name,
+            });
         },
         remove: (state, action) => {
             // return state.filter(toDo => toDo.id !== action.payload.id);

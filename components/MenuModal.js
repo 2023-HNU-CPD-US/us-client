@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
 
-export default function MenuModal({ visible, onClose }) {
+export default function MenuModal({ id, visible, onClose }) {
+    const handleDelete = () => {
+        console.log(1);
+        onClose();
+    };
+
     return (
         <Modal
             visible={visible}
@@ -27,9 +32,7 @@ export default function MenuModal({ visible, onClose }) {
                     <Pressable
                         style={styles.actionButton}
                         android_ripple={{ color: "#eee" }}
-                        onPress={() => {
-                            onClose();
-                        }}
+                        onPress={handleDelete}
                     >
                         <Text style={styles.actionText}>삭제</Text>
                     </Pressable>

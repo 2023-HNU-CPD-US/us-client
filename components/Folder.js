@@ -13,7 +13,7 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./MenuModal";
 
-function Folder({ name }) {
+function Folder({ id, name }) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const modalOpen = useCallback(() => {
@@ -44,6 +44,7 @@ function Folder({ name }) {
             >
                 <Entypo name="dots-three-vertical" size={18} color="#777" />
                 <MenuModal
+                    id={id}
                     visible={modalVisible}
                     onClose={() => setModalVisible(false)}
                 />

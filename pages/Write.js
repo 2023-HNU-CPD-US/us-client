@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     titleInput: {
         height: "100%",
         backgroundColor: "#f1f3f5",
+        borderRadius: 10,
         padding: 10,
     },
     contentWrap: {
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
     contentInput: {
         height: "100%",
         backgroundColor: "#f1f3f5",
+        borderRadius: 10,
         paddingTop: 15,
         paddingHorizontal: 10,
     },

@@ -10,6 +10,8 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
+import SaveScreen from "./pages/Save";
+import CameraScreen from "./pages/Camera";
 
 const store = createStore(rootReducer);
 
@@ -43,6 +45,14 @@ export default function App() {
                             headerTitle: (props) => <LogoTitle {...props} />,
                         }}
                     />
+                    <Stack.Screen
+                        name="저장"
+                        component={SaveScreen}
+                        options={{
+                            headerTitle: (props) => <LogoTitle {...props} />,
+                        }}
+                    />
+                    <Stack.Screen name="카메라" component={CameraScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

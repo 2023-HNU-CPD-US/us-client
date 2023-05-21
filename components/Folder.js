@@ -9,7 +9,7 @@ import {
     ActionSheetIOS,
     Keyboard,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/folderReducer";
 
 import { Entypo } from "@expo/vector-icons";

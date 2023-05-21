@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
+import { useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/folderReducer";
 
 export default function MenuModal({ id, visible, onClose }) {
+    const dispatch = useDispatch();
     const handleDelete = () => {
-        console.log(1);
+        const removeFolder = {
+            id,
+        };
+        dispatch(remove(removeFolder));
         onClose();
     };
 

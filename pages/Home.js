@@ -82,9 +82,9 @@ function Home({ navigation }) {
                         )}
                         {second &&
                             (second.type == "folder" ? (
-                                <Folder id={first.id} name={second.name} />
+                                <Folder id={second.id} name={second.name} />
                             ) : (
-                                <Note id={first.id} title={second.title} />
+                                <Note id={second.id} title={second.title} />
                             ))}
                     </View>
                 );

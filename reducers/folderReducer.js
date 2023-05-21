@@ -23,7 +23,12 @@ const folders = createSlice({
             });
         },
         remove: (state, action) => {
-            // return state.filter(toDo => toDo.id !== action.payload.id);
+            return {
+                ...state,
+                folders: state.folders.filter(
+                    (folder) => folder.id !== action.payload.id
+                ),
+            };
         },
         rename: (state, action) => {},
     },

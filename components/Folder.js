@@ -9,12 +9,15 @@ import {
     ActionSheetIOS,
     Keyboard,
 } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/folderReducer";
 
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./MenuModal";
 
 function Folder({ id, name }) {
     const [modalVisible, setModalVisible] = useState(false);
+    const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
         // setModalVisible(true);
@@ -29,6 +32,10 @@ function Folder({ id, name }) {
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
                     } else if (buttonIndex === 1) {
+                        const removeFolder = {
+                            id,
+                        };
+                        dispatch(remove(removeFolder));
                     }
                 }
             );

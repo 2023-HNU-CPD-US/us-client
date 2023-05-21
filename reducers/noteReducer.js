@@ -34,7 +34,14 @@ const notes = createSlice({
                 ),
             };
         },
-        rename: (state, action) => {},
+        rename: (state, action) => {
+            const note = state.notes.find(
+                (note) => note.id === action.payload.id
+            );
+            if (note) {
+                note.title = action.payload.newName;
+            }
+        },
     },
 });
 

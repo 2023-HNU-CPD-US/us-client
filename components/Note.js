@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
     View,
     Text,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     ActionSheetIOS,
@@ -16,6 +17,9 @@ const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
 
 function Note({ id, title, content }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+    const [isRenaming, setisRenameing] = useState(false);
+    const [newName, setNewName] = useState(title);
+    const renameInputRef = useRef(null);
 
     const dispatch = useDispatch();
 
@@ -30,6 +34,7 @@ function Note({ id, title, content }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setisRenameing(true);
                     } else if (buttonIndex === 1) {
                         const removeNote = {
                             id,
@@ -40,6 +45,23 @@ function Note({ id, title, content }) {
             );
         }
     }, []);
+
+    useEffect(() => {
+        if (isRenaming) {
+            if (renameInputRef.current) renameInputRef.current.focus();
+        }
+    }, [isRenaming]);
+
+    const handleRenameSubmit = ({ nativeEvent }) => {
+        const { text } = nativeEvent;
+        const renameNote = {
+            id,
+            newName: text,
+        };
+        dispatch(rename(renameNote));
+
+        setisRenameing(false);
+    };
 
     return (
         <TouchableOpacity activeOpacity="0.6" style={styles.note}>
@@ -54,14 +76,26 @@ function Note({ id, title, content }) {
                     type="note"
                     visible={isMenuModalVisible}
                     onClose={() => setMenuModalVisible(false)}
+                    setisRenameing={setisRenameing}
                 />
             </TouchableOpacity>
             <View>
-                <Text style={styles.noteName}>{title}</Text>
+                {!isRenaming && <Text style={styles.noteName}>{title}</Text>}
+                {isRenaming && (
+                    <TextInput
+                        ref={renameInputRef}
+                        value={newName}
+                        style={styles.renameInput}
+                        returnKeyType="done"
+                        onChangeText={setNewName}
+                        onSubmitEditing={handleRenameSubmit}
+                    />
+                )}
                 <Text style={styles.noteContents}>
-                    {content.length > MAX_LENGTH
-                        ? `${content.slice(0, MAX_LENGTH)} ...`
-                        : content}
+                    {content &&
+                        (content.length > MAX_LENGTH
+                            ? `${content.slice(0, MAX_LENGTH)} ...`
+                            : content)}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -87,6 +121,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     noteContents: {},
+    renameInput: {
+        height: 20,
+        borderRadius: 5,
+        backgroundColor: "#eee",
+        padding: 5,
+        marginBottom: 5,
+    },
 });
 
 export default Note;

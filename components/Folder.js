@@ -19,7 +19,7 @@ function Folder({ id, name }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
     const [isRenaming, setisRenameing] = useState(false);
     const [newName, setNewName] = useState(name);
-    const textInputRef = useRef(null);
+    const renameInputRef = useRef(null);
 
     const dispatch = useDispatch();
 
@@ -49,7 +49,7 @@ function Folder({ id, name }) {
 
     useEffect(() => {
         if (isRenaming) {
-            if (textInputRef.current) textInputRef.current.focus();
+            if (renameInputRef.current) renameInputRef.current.focus();
         }
     }, [isRenaming]);
 
@@ -89,7 +89,7 @@ function Folder({ id, name }) {
                 {!isRenaming && <Text style={styles.folderName}>{name}</Text>}
                 {isRenaming && (
                     <TextInput
-                        ref={textInputRef}
+                        ref={renameInputRef}
                         value={newName}
                         style={styles.renameInput}
                         returnKeyType="done"

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
     View,
     Text,
@@ -17,6 +17,9 @@ import MenuModal from "./modal/MenuModal";
 
 function Folder({ id, name }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+    const [isRenaming, setisRenameing] = useState(false);
+    const [newName, setNewName] = useState(name);
+    const textInputRef = useRef(null);
 
     const dispatch = useDispatch();
 
@@ -32,6 +35,7 @@ function Folder({ id, name }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setisRenameing(true);
                     } else if (buttonIndex === 1) {
                         const removeFolder = {
                             id,
@@ -42,6 +46,23 @@ function Folder({ id, name }) {
             );
         }
     }, []);
+
+    useEffect(() => {
+        if (isRenaming) {
+            if (textInputRef.current) textInputRef.current.focus();
+        }
+    }, [isRenaming]);
+
+    const handleRenameSubmit = ({ nativeEvent }) => {
+        const { text } = nativeEvent;
+        const renameFolder = {
+            id,
+            newName: text,
+        };
+        dispatch(rename(renameFolder));
+
+        setisRenameing(false);
+    };
 
     return (
         <TouchableOpacity activeOpacity="0.6" style={styles.folder}>
@@ -56,6 +77,7 @@ function Folder({ id, name }) {
                     type="folder"
                     visible={isMenuModalVisible}
                     onClose={() => setMenuModalVisible(false)}
+                    setisRenameing={setisRenameing}
                 />
             </TouchableOpacity>
             <View>
@@ -64,7 +86,17 @@ function Folder({ id, name }) {
                     resizeMode="contain"
                     source={require("../assets/folder.png")}
                 ></Image>
-                <Text style={styles.folderName}>{name}</Text>
+                {!isRenaming && <Text style={styles.folderName}>{name}</Text>}
+                {isRenaming && (
+                    <TextInput
+                        ref={textInputRef}
+                        value={newName}
+                        style={styles.renameInput}
+                        returnKeyType="done"
+                        onChangeText={setNewName}
+                        onSubmitEditing={handleRenameSubmit}
+                    />
+                )}
             </View>
         </TouchableOpacity>
     );
@@ -86,6 +118,13 @@ const styles = StyleSheet.create({
     folderName: {
         fontSize: 15,
         fontWeight: 600,
+        marginTop: 5,
+    },
+    renameInput: {
+        height: 20,
+        borderRadius: 5,
+        backgroundColor: "#eee",
+        padding: 5,
         marginTop: 5,
     },
 });

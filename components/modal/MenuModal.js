@@ -10,8 +10,15 @@ import {
     rename as folderRename,
 } from "../../reducers/folderReducer";
 
-export default function MenuModal({ id, type, visible, onClose }) {
+export default function MenuModal({
+    id,
+    type,
+    visible,
+    onClose,
+    setisRenameing,
+}) {
     const dispatch = useDispatch();
+
     const handleDelete = () => {
         const remove = {
             id,
@@ -38,6 +45,7 @@ export default function MenuModal({ id, type, visible, onClose }) {
                         }}
                         android_ripple={{ color: "#eee" }}
                         onPress={() => {
+                            setisRenameing(true);
                             onClose();
                         }}
                     >

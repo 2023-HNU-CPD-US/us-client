@@ -15,7 +15,6 @@ const folders = createSlice({
     initialState,
     reducers: {
         add: (state, action) => {
-            console.log(action.payload);
             state.folders.unshift({
                 id: action.payload.id,
                 type: "folder",
@@ -30,7 +29,14 @@ const folders = createSlice({
                 ),
             };
         },
-        rename: (state, action) => {},
+        rename: (state, action) => {
+            const folder = state.folders.find(
+                (folder) => folder.id === action.payload.id
+            );
+            if (folder) {
+                folder.name = action.payload.newName;
+            }
+        },
     },
 });
 

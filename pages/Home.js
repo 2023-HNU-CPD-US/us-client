@@ -31,7 +31,7 @@ function Home({ navigation }) {
             .sort((a, b) => a.title.localeCompare(b.title))
     );
     const data = [...folderData, ...noteData];
-    console.log(data);
+    // console.log(data);
 
     const [modalVisible, setModalVisible] = useState(false);
     const modalOpen = useCallback(() => {
@@ -68,7 +68,6 @@ function Home({ navigation }) {
 
     const renderPairs = () => {
         const pairs = [];
-        console.log(data.length);
         if (data.length) {
             for (let i = 0; i < data.length; i += 2) {
                 const first = data[i];

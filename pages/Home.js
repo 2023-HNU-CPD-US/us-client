@@ -16,7 +16,7 @@ import { add } from "../reducers/folderReducer";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
-import SortModal from "../components/SortModal";
+import SortModal from "../components/modal/SortModal";
 import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {

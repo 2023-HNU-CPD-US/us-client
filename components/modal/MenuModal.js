@@ -4,11 +4,11 @@ import { useDispatch } from "react-redux";
 import {
     remove as noteRemove,
     rename as noteRename,
-} from "../reducers/noteReducer";
+} from "../../reducers/noteReducer";
 import {
     remove as folderRemove,
     rename as folderRename,
-} from "../reducers/folderReducer";
+} from "../../reducers/folderReducer";
 
 export default function MenuModal({ id, type, visible, onClose }) {
     const dispatch = useDispatch();

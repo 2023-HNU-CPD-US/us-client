@@ -12,7 +12,9 @@ import { remove, rename } from "../reducers/noteReducer";
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./MenuModal";
 
-function Note({ id, title }) {
+const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
+
+function Note({ id, title, content }) {
     const [modalVisible, setModalVisible] = useState(false);
     const dispatch = useDispatch();
 
@@ -56,7 +58,9 @@ function Note({ id, title }) {
             <View>
                 <Text style={styles.noteName}>{title}</Text>
                 <Text style={styles.noteContents}>
-                    Lorem Ipsum is simply dummy text of the printing and ...
+                    {content.length > MAX_LENGTH
+                        ? `${content.slice(0, MAX_LENGTH)} ...`
+                        : content}
                 </Text>
             </View>
         </TouchableOpacity>

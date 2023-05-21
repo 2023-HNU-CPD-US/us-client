@@ -6,12 +6,15 @@ import {
     StyleSheet,
     ActionSheetIOS,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/noteReducer";
 
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./MenuModal";
 
 function Note({ id, title }) {
     const [modalVisible, setModalVisible] = useState(false);
+    const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
@@ -25,6 +28,10 @@ function Note({ id, title }) {
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
                     } else if (buttonIndex === 1) {
+                        const removeNote = {
+                            id,
+                        };
+                        dispatch(remove(removeNote));
                     }
                 }
             );
@@ -41,6 +48,7 @@ function Note({ id, title }) {
                 <Entypo name="dots-three-vertical" size={18} color="#777" />
                 <MenuModal
                     id={id}
+                    type="note"
                     visible={modalVisible}
                     onClose={() => setModalVisible(false)}
                 />

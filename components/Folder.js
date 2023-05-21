@@ -52,6 +52,7 @@ function Folder({ id, name }) {
                 <Entypo name="dots-three-vertical" size={18} color="#777" />
                 <MenuModal
                     id={id}
+                    type="folder"
                     visible={modalVisible}
                     onClose={() => setModalVisible(false)}
                 />

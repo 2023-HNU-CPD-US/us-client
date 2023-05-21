@@ -13,16 +13,17 @@ import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/folderReducer";
 
 import { Entypo } from "@expo/vector-icons";
-import MenuModal from "./MenuModal";
+import MenuModal from "./modal/MenuModal";
 
 function Folder({ id, name }) {
-    const [modalVisible, setModalVisible] = useState(false);
+    const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+
     const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
-        // setModalVisible(true);
+        // setMenuModalVisible(true);
         if (Platform.OS === "android") {
-            setModalVisible(true);
+            setMenuModalVisible(true);
         } else {
             ActionSheetIOS.showActionSheetWithOptions(
                 {
@@ -53,8 +54,8 @@ function Folder({ id, name }) {
                 <MenuModal
                     id={id}
                     type="folder"
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
+                    visible={isMenuModalVisible}
+                    onClose={() => setMenuModalVisible(false)}
                 />
             </TouchableOpacity>
             <View>

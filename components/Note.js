@@ -10,17 +10,18 @@ import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/noteReducer";
 
 import { Entypo } from "@expo/vector-icons";
-import MenuModal from "./MenuModal";
+import MenuModal from "./modal/MenuModal";
 
 const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
 
 function Note({ id, title, content }) {
-    const [modalVisible, setModalVisible] = useState(false);
+    const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+
     const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
-            setModalVisible(true);
+            setMenuModalVisible(true);
         } else {
             ActionSheetIOS.showActionSheetWithOptions(
                 {
@@ -51,8 +52,8 @@ function Note({ id, title, content }) {
                 <MenuModal
                     id={id}
                     type="note"
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
+                    visible={isMenuModalVisible}
+                    onClose={() => setMenuModalVisible(false)}
                 />
             </TouchableOpacity>
             <View>

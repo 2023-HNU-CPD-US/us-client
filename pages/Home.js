@@ -28,12 +28,12 @@ function Home({ navigation }) {
     const noteData = useSelector((state) =>
         state.noteReducer.notes
             .slice()
-            .sort((a, b) => a.title.localeCompare(b.title))
+            .sort((a, b) => a.name.localeCompare(b.name))
     );
-
     const [data, setData] = useState(
         [...folderData, ...noteData].filter((item) => item.parentId === null)
     );
+
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -88,7 +88,7 @@ function Home({ navigation }) {
                         ) : (
                             <Note
                                 id={first.id}
-                                title={first.title}
+                                name={first.name}
                                 content={first.content}
                             />
                         )}
@@ -105,7 +105,7 @@ function Home({ navigation }) {
                                 ) : (
                                     <Note
                                         id={second.id}
-                                        title={second.title}
+                                        name={second.name}
                                         content={second.content}
                                     />
                                 )}
@@ -140,8 +140,19 @@ function Home({ navigation }) {
         }
     }, []);
 
-    const handleSearch = () => {
-        console.log("검색어:", searchText);
+    const handleSearchSubmit = () => {
+        if (searchText === "") {
+            setData(
+                [...folderData, ...noteData].filter(
+                    (item) => item.parentId === null
+                )
+            );
+        } else {
+            const filteredData = [...folderData, ...noteData].filter((item) =>
+                item.name.includes(searchText)
+            );
+            setData(filteredData);
+        }
     };
 
     return (
@@ -172,6 +183,7 @@ function Home({ navigation }) {
                     }}
                     placeholder="검색어를 입력하세요."
                     onChangeText={(text) => setSearchText(text)}
+                    onSubmitEditing={handleSearchSubmit}
                     returnKeyType="search"
                     value={searchText}
                 />

@@ -15,10 +15,10 @@ import MenuModal from "./modal/MenuModal";
 
 const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
 
-function Note({ id, title, content }) {
+function Note({ id, name, content }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
     const [isRenaming, setisRenameing] = useState(false);
-    const [newName, setNewName] = useState(title);
+    const [newName, setNewName] = useState(name);
     const renameInputRef = useRef(null);
 
     const dispatch = useDispatch();
@@ -80,7 +80,7 @@ function Note({ id, title, content }) {
                 />
             </TouchableOpacity>
             <View>
-                {!isRenaming && <Text style={styles.noteName}>{title}</Text>}
+                {!isRenaming && <Text style={styles.noteName}>{name}</Text>}
                 {isRenaming && (
                     <TextInput
                         ref={renameInputRef}

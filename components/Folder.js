@@ -15,7 +15,7 @@ import { remove, rename } from "../reducers/folderReducer";
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./modal/MenuModal";
 
-function Folder({ id, name }) {
+function Folder({ id, name, onPress }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
     const [isRenaming, setisRenameing] = useState(false);
     const [newName, setNewName] = useState(name);
@@ -65,7 +65,11 @@ function Folder({ id, name }) {
     };
 
     return (
-        <TouchableOpacity activeOpacity="0.6" style={styles.folder}>
+        <TouchableOpacity
+            activeOpacity="0.6"
+            style={styles.folder}
+            onPress={onPress}
+        >
             <TouchableOpacity
                 activeOpacity="0.6"
                 style={styles.folderMenu}

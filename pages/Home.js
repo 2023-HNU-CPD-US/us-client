@@ -30,10 +30,98 @@ function Home({ navigation }) {
             .slice()
             .sort((a, b) => a.title.localeCompare(b.title))
     );
-    const data = [...folderData, ...noteData];
-    // console.log(data);
 
+    const [data, setData] = useState(
+        [...folderData, ...noteData].filter((item) => item.parentId === null)
+    );
     const [modalVisible, setModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const [currentFolder, setCurrentFolder] = useState(null);
+
+    const dispatch = useDispatch();
+    const handleAddFolder = () => {
+        const newFolder = {
+            id: Date.now(), // 임의의 고유 ID 생성
+            name: "새 폴더",
+            parentId: currentFolder, // 현재 폴더를 부모로 설정
+        };
+        dispatch(add(newFolder));
+    };
+
+    const handleFolderPress = useCallback(
+        (folderId) => {
+            const filteredData = [...folderData, ...noteData].filter(
+                (item) => item.parentId === folderId
+            );
+            setData(filteredData);
+            setCurrentFolder(folderId);
+        },
+        [folderData, noteData]
+    );
+
+    const handleGoBack = useCallback(() => {
+        if (currentFolder) {
+            const parentFolder = folderData.find(
+                (folder) => folder.id === currentFolder
+            );
+            if (parentFolder) {
+                setCurrentFolder(parentFolder.parentId);
+                handleFolderPress(parentFolder.parentId);
+            }
+        }
+    }, [currentFolder, folderData, handleFolderPress]);
+
+    const renderPairs = (renderData) => {
+        const pairs = [];
+        if (renderData.length) {
+            for (let i = 0; i < renderData.length; i += 2) {
+                const first = renderData[i];
+                const second = renderData[i + 1];
+                const pair = (
+                    <View key={i} style={styles.listRow}>
+                        {first.type === "folder" ? (
+                            <Folder
+                                id={first.id}
+                                name={first.name}
+                                onPress={() => handleFolderPress(first.id)}
+                            />
+                        ) : (
+                            <Note
+                                id={first.id}
+                                title={first.title}
+                                content={first.content}
+                            />
+                        )}
+                        {second && (
+                            <>
+                                {second.type === "folder" ? (
+                                    <Folder
+                                        id={second.id}
+                                        name={second.name}
+                                        onPress={() =>
+                                            handleFolderPress(second.id)
+                                        }
+                                    />
+                                ) : (
+                                    <Note
+                                        id={second.id}
+                                        title={second.title}
+                                        content={second.content}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </View>
+                );
+                pairs.push(pair);
+            }
+        } else {
+            const pair = <NoDataImage />;
+            pairs.push(pair);
+        }
+        return pairs;
+    };
+
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
             setModalVisible(true);
@@ -52,56 +140,8 @@ function Home({ navigation }) {
         }
     }, []);
 
-    const [searchText, setSearchText] = useState("");
     const handleSearch = () => {
         console.log("검색어:", searchText);
-    };
-
-    const dispatch = useDispatch();
-    const handleAddFolder = () => {
-        const newFolder = {
-            id: Date.now(), // 임의의 고유 ID 생성
-            name: "새 폴더",
-        };
-        dispatch(add(newFolder));
-    };
-
-    const renderPairs = () => {
-        const pairs = [];
-        if (data.length) {
-            for (let i = 0; i < data.length; i += 2) {
-                const first = data[i];
-                const second = data[i + 1];
-                const pair = (
-                    <View key={i} style={styles.listRow}>
-                        {first.type == "folder" ? (
-                            <Folder id={first.id} name={first.name} />
-                        ) : (
-                            <Note
-                                id={first.id}
-                                title={first.title}
-                                content={first.content}
-                            />
-                        )}
-                        {second &&
-                            (second.type == "folder" ? (
-                                <Folder id={second.id} name={second.name} />
-                            ) : (
-                                <Note
-                                    id={second.id}
-                                    title={second.title}
-                                    content={second.content}
-                                />
-                            ))}
-                    </View>
-                );
-                pairs.push(pair);
-            }
-        } else {
-            const pair = <NoDataImage />;
-            pairs.push(pair);
-        }
-        return pairs;
     };
 
     return (
@@ -114,6 +154,14 @@ function Home({ navigation }) {
                     alignItems: "center",
                 }}
             >
+                {currentFolder && (
+                    <TouchableOpacity
+                        onPress={handleGoBack}
+                        style={{ marginRight: 10 }}
+                    >
+                        <FontAwesome name="arrow-left" size={20} color="#555" />
+                    </TouchableOpacity>
+                )}
                 <TextInput
                     style={{
                         flex: 9,
@@ -127,12 +175,7 @@ function Home({ navigation }) {
                     returnKeyType="search"
                     value={searchText}
                 />
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                    }}
-                    onPress={modalOpen}
-                >
+                <TouchableOpacity style={{ flex: 1 }} onPress={modalOpen}>
                     <FontAwesome
                         name="sort-amount-desc"
                         size={20}
@@ -148,7 +191,7 @@ function Home({ navigation }) {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.list}>{renderPairs()}</ScrollView>
+            <ScrollView style={styles.list}>{renderPairs(data)}</ScrollView>
 
             <View style={styles.menu}>
                 <TouchableOpacity
@@ -173,7 +216,7 @@ function Home({ navigation }) {
                         borderTopRightRadius: 10,
                         borderBottomRightRadius: 10,
                     }}
-                    onPress={() => handleAddFolder()}
+                    onPress={handleAddFolder}
                 >
                     <View>
                         <Feather name="folder-plus" size={24} color="black" />

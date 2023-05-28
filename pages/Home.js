@@ -1,11 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
     StyleSheet,
     View,
-    Text,
     TextInput,
-    Button,
-    Image,
     ScrollView,
     TouchableOpacity,
     ActionSheetIOS,
@@ -30,6 +27,7 @@ function Home({ navigation }) {
             .slice()
             .sort((a, b) => a.name.localeCompare(b.name))
     );
+
     const [data, setData] = useState(
         [...folderData, ...noteData].filter((item) => item.parentId === null)
     );
@@ -37,6 +35,7 @@ function Home({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
+    const [sortOption, setSortOption] = useState("name");
 
     const dispatch = useDispatch();
     const handleAddFolder = () => {
@@ -122,6 +121,30 @@ function Home({ navigation }) {
         return pairs;
     };
 
+    useEffect(() => {
+        const sortedFolders = folderData
+            .filter((item) => item.parentId === currentFolder)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        const sortedNotes = noteData
+            .filter((item) => item.parentId === currentFolder)
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        let sortedData = [];
+        if (sortOption === "name") {
+            sortedData = [...sortedFolders, ...sortedNotes];
+        } else if (sortOption === "date") {
+            const sortedFolderData = sortedFolders.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+            const sortedNoteData = sortedNotes.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+            sortedData = [...sortedFolderData, ...sortedNoteData];
+        }
+
+        setData(sortedData);
+    }, [sortOption]);
+
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
             setModalVisible(true);
@@ -133,7 +156,9 @@ function Home({ navigation }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setSortOption("date");
                     } else if (buttonIndex === 1) {
+                        setSortOption("name");
                     }
                 }
             );
@@ -199,6 +224,7 @@ function Home({ navigation }) {
                     <SortModal
                         visible={modalVisible}
                         onClose={() => setModalVisible(false)}
+                        setSortOption={setSortOption}
                     />
                 </TouchableOpacity>
             </View>

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
 
-export default function SortModal({ visible, onClose }) {
+export default function SortModal({ visible, onClose, setSortOption }) {
     return (
         <Modal
             visible={visible}
@@ -19,6 +19,7 @@ export default function SortModal({ visible, onClose }) {
                         }}
                         android_ripple={{ color: "#eee" }}
                         onPress={() => {
+                            setSortOption("date");
                             onClose();
                         }}
                     >
@@ -28,6 +29,7 @@ export default function SortModal({ visible, onClose }) {
                         style={styles.actionButton}
                         android_ripple={{ color: "#eee" }}
                         onPress={() => {
+                            setSortOption("name");
                             onClose();
                         }}
                     >

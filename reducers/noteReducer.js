@@ -37,7 +37,7 @@ const notes = createSlice({
     initialState,
     reducers: {
         add: (state, action) => {
-            // state.unshift({ text: action.payload.text, id: action.payload.id }); // redux toolkit을 사용하면 state를 mutate해도 됨
+            // state.unshift({ text: action.payload.text, id: action.payload.id });
         },
         remove: (state, action) => {
             return {

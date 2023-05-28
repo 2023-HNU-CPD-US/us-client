@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
+import { useDispatch } from "react-redux";
+import {
+    remove as noteRemove,
+    rename as noteRename,
+} from "../../reducers/noteReducer";
+import {
+    remove as folderRemove,
+    rename as folderRename,
+} from "../../reducers/folderReducer";
 
-export default function MenuModal({ visible, onClose }) {
+export default function MenuModal({
+    id,
+    type,
+    visible,
+    onClose,
+    setisRenameing,
+}) {
+    const dispatch = useDispatch();
+
+    const handleDelete = () => {
+        const remove = {
+            id,
+        };
+        if (type == "note") dispatch(noteRemove(remove));
+        else dispatch(folderRemove(remove));
+        onClose();
+    };
+
     return (
         <Modal
             visible={visible}
@@ -19,6 +45,7 @@ export default function MenuModal({ visible, onClose }) {
                         }}
                         android_ripple={{ color: "#eee" }}
                         onPress={() => {
+                            setisRenameing(true);
                             onClose();
                         }}
                     >
@@ -27,9 +54,7 @@ export default function MenuModal({ visible, onClose }) {
                     <Pressable
                         style={styles.actionButton}
                         android_ripple={{ color: "#eee" }}
-                        onPress={() => {
-                            onClose();
-                        }}
+                        onPress={handleDelete}
                     >
                         <Text style={styles.actionText}>삭제</Text>
                     </Pressable>

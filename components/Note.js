@@ -1,21 +1,31 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
     View,
     Text,
+    TextInput,
     TouchableOpacity,
     StyleSheet,
     ActionSheetIOS,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/noteReducer";
 
 import { Entypo } from "@expo/vector-icons";
-import MenuModal from "./MenuModal";
+import MenuModal from "./modal/MenuModal";
 
-function Note({ title }) {
-    const [modalVisible, setModalVisible] = useState(false);
+const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
+
+function Note({ id, name, content }) {
+    const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+    const [isRenaming, setisRenameing] = useState(false);
+    const [newName, setNewName] = useState(name);
+    const renameInputRef = useRef(null);
+
+    const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
-            setModalVisible(true);
+            setMenuModalVisible(true);
         } else {
             ActionSheetIOS.showActionSheetWithOptions(
                 {
@@ -24,12 +34,34 @@ function Note({ title }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setisRenameing(true);
                     } else if (buttonIndex === 1) {
+                        const removeNote = {
+                            id,
+                        };
+                        dispatch(remove(removeNote));
                     }
                 }
             );
         }
     }, []);
+
+    useEffect(() => {
+        if (isRenaming) {
+            if (renameInputRef.current) renameInputRef.current.focus();
+        }
+    }, [isRenaming]);
+
+    const handleRenameSubmit = ({ nativeEvent }) => {
+        const { text } = nativeEvent;
+        const renameNote = {
+            id,
+            newName: text,
+        };
+        dispatch(rename(renameNote));
+
+        setisRenameing(false);
+    };
 
     return (
         <TouchableOpacity activeOpacity="0.6" style={styles.note}>
@@ -40,14 +72,30 @@ function Note({ title }) {
             >
                 <Entypo name="dots-three-vertical" size={18} color="#777" />
                 <MenuModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
+                    id={id}
+                    type="note"
+                    visible={isMenuModalVisible}
+                    onClose={() => setMenuModalVisible(false)}
+                    setisRenameing={setisRenameing}
                 />
             </TouchableOpacity>
             <View>
-                <Text style={styles.noteName}>{title}</Text>
+                {!isRenaming && <Text style={styles.noteName}>{name}</Text>}
+                {isRenaming && (
+                    <TextInput
+                        ref={renameInputRef}
+                        value={newName}
+                        style={styles.renameInput}
+                        returnKeyType="done"
+                        onChangeText={setNewName}
+                        onSubmitEditing={handleRenameSubmit}
+                    />
+                )}
                 <Text style={styles.noteContents}>
-                    Lorem Ipsum is simply dummy text of the printing and ...
+                    {content &&
+                        (content.length > MAX_LENGTH
+                            ? `${content.slice(0, MAX_LENGTH)} ...`
+                            : content)}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -73,6 +121,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     noteContents: {},
+    renameInput: {
+        height: 20,
+        borderRadius: 5,
+        backgroundColor: "#eee",
+        padding: 5,
+        marginBottom: 5,
+    },
 });
 
 export default Note;

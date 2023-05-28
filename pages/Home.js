@@ -1,30 +1,149 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
     StyleSheet,
     View,
-    Text,
     TextInput,
-    Button,
-    Image,
     ScrollView,
     TouchableOpacity,
     ActionSheetIOS,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { add } from "../reducers/folderReducer";
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
-import SortModal from "../components/SortModal";
+import SortModal from "../components/modal/SortModal";
 import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
-    const folderData = useSelector((state) => state.folderReducer.folders);
-    const noteData = useSelector((state) => state.noteReducer.notes);
-    const data = [...folderData, ...noteData];
-    console.log(data);
+    const folderData = useSelector((state) =>
+        state.folderReducer.folders
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+    );
+    const noteData = useSelector((state) =>
+        state.noteReducer.notes
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+    );
+
+    const [data, setData] = useState(
+        [...folderData, ...noteData].filter((item) => item.parentId === null)
+    );
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const [currentFolder, setCurrentFolder] = useState(null);
+    const [sortOption, setSortOption] = useState("name");
+
+    const dispatch = useDispatch();
+    const handleAddFolder = () => {
+        const newFolder = {
+            id: Date.now(), // 임의의 고유 ID 생성
+            name: "새 폴더",
+            parentId: currentFolder, // 현재 폴더를 부모로 설정
+        };
+        dispatch(add(newFolder));
+    };
+
+    const handleFolderPress = useCallback(
+        (folderId) => {
+            const filteredData = [...folderData, ...noteData].filter(
+                (item) => item.parentId === folderId
+            );
+            setData(filteredData);
+            setCurrentFolder(folderId);
+        },
+        [folderData, noteData]
+    );
+
+    const handleGoBack = useCallback(() => {
+        if (currentFolder) {
+            const parentFolder = folderData.find(
+                (folder) => folder.id === currentFolder
+            );
+            if (parentFolder) {
+                setCurrentFolder(parentFolder.parentId);
+                handleFolderPress(parentFolder.parentId);
+            }
+        }
+    }, [currentFolder, folderData, handleFolderPress]);
+
+    const renderPairs = (renderData) => {
+        const pairs = [];
+        if (renderData.length) {
+            for (let i = 0; i < renderData.length; i += 2) {
+                const first = renderData[i];
+                const second = renderData[i + 1];
+                const pair = (
+                    <View key={i} style={styles.listRow}>
+                        {first.type === "folder" ? (
+                            <Folder
+                                id={first.id}
+                                name={first.name}
+                                onPress={() => handleFolderPress(first.id)}
+                            />
+                        ) : (
+                            <Note
+                                id={first.id}
+                                name={first.name}
+                                content={first.content}
+                            />
+                        )}
+                        {second && (
+                            <>
+                                {second.type === "folder" ? (
+                                    <Folder
+                                        id={second.id}
+                                        name={second.name}
+                                        onPress={() =>
+                                            handleFolderPress(second.id)
+                                        }
+                                    />
+                                ) : (
+                                    <Note
+                                        id={second.id}
+                                        name={second.name}
+                                        content={second.content}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </View>
+                );
+                pairs.push(pair);
+            }
+        } else {
+            const pair = <NoDataImage />;
+            pairs.push(pair);
+        }
+        return pairs;
+    };
+
+    useEffect(() => {
+        const sortedFolders = folderData
+            .filter((item) => item.parentId === currentFolder)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        const sortedNotes = noteData
+            .filter((item) => item.parentId === currentFolder)
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        let sortedData = [];
+        if (sortOption === "name") {
+            sortedData = [...sortedFolders, ...sortedNotes];
+        } else if (sortOption === "date") {
+            const sortedFolderData = sortedFolders.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+            const sortedNoteData = sortedNotes.sort(
+                (a, b) => new Date(b.date) - new Date(a.date)
+            );
+            sortedData = [...sortedFolderData, ...sortedNoteData];
+        }
+
+        setData(sortedData);
+    }, [sortOption]);
 
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
@@ -37,48 +156,28 @@ function Home({ navigation }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setSortOption("date");
                     } else if (buttonIndex === 1) {
+                        setSortOption("name");
                     }
                 }
             );
         }
     }, []);
 
-    const [searchText, setSearchText] = useState("");
-
-    const handleSearch = () => {
-        console.log("검색어:", searchText);
-    };
-
-    const renderPairs = () => {
-        const pairs = [];
-        console.log(data.length);
-        if (data.length) {
-            for (let i = 0; i < data.length; i += 2) {
-                const first = data[i];
-                const second = data[i + 1];
-                const pair = (
-                    <View key={i} style={styles.listRow}>
-                        {first.type == "folder" ? (
-                            <Folder name={first.name} />
-                        ) : (
-                            <Note title={first.title} />
-                        )}
-                        {second &&
-                            (second.type == "folder" ? (
-                                <Folder name={second.name} />
-                            ) : (
-                                <Note title={second.title} />
-                            ))}
-                    </View>
-                );
-                pairs.push(pair);
-            }
+    const handleSearchSubmit = () => {
+        if (searchText === "") {
+            setData(
+                [...folderData, ...noteData].filter(
+                    (item) => item.parentId === null
+                )
+            );
         } else {
-            const pair = <NoDataImage />;
-            pairs.push(pair);
+            const filteredData = [...folderData, ...noteData].filter((item) =>
+                item.name.includes(searchText)
+            );
+            setData(filteredData);
         }
-        return pairs;
     };
 
     return (
@@ -91,6 +190,14 @@ function Home({ navigation }) {
                     alignItems: "center",
                 }}
             >
+                {currentFolder && (
+                    <TouchableOpacity
+                        onPress={handleGoBack}
+                        style={{ marginRight: 10 }}
+                    >
+                        <FontAwesome name="arrow-left" size={20} color="#555" />
+                    </TouchableOpacity>
+                )}
                 <TextInput
                     style={{
                         flex: 9,
@@ -101,15 +208,11 @@ function Home({ navigation }) {
                     }}
                     placeholder="검색어를 입력하세요."
                     onChangeText={(text) => setSearchText(text)}
+                    onSubmitEditing={handleSearchSubmit}
                     returnKeyType="search"
                     value={searchText}
                 />
-                <TouchableOpacity
-                    style={{
-                        flex: 1,
-                    }}
-                    onPress={modalOpen}
-                >
+                <TouchableOpacity style={{ flex: 1 }} onPress={modalOpen}>
                     <FontAwesome
                         name="sort-amount-desc"
                         size={20}
@@ -121,11 +224,12 @@ function Home({ navigation }) {
                     <SortModal
                         visible={modalVisible}
                         onClose={() => setModalVisible(false)}
+                        setSortOption={setSortOption}
                     />
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.list}>{renderPairs()}</ScrollView>
+            <ScrollView style={styles.list}>{renderPairs(data)}</ScrollView>
 
             <View style={styles.menu}>
                 <TouchableOpacity
@@ -150,7 +254,7 @@ function Home({ navigation }) {
                         borderTopRightRadius: 10,
                         borderBottomRightRadius: 10,
                     }}
-                    // onPress={() => navigation.navigate("작성하기")}
+                    onPress={handleAddFolder}
                 >
                     <View>
                         <Feather name="folder-plus" size={24} color="black" />
@@ -169,6 +273,7 @@ const styles = StyleSheet.create({
     list: {
         width: "100%",
         paddingHorizontal: 20,
+        marginBottom: 90,
     },
     listRow: {
         flexDirection: "row",

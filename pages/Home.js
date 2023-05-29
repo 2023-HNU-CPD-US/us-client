@@ -6,15 +6,19 @@ import {
     ScrollView,
     TouchableOpacity,
     ActionSheetIOS,
+    
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { add } from "../reducers/folderReducer";
 
+
+
 import Folder from "../components/Folder";
 import Note from "../components/Note";
 import SortModal from "../components/modal/SortModal";
 import NoDataImage from "../components/NoDataImage";
+import axios from 'axios';
 
 function Home({ navigation }) {
     const folderData = useSelector((state) =>
@@ -31,6 +35,21 @@ function Home({ navigation }) {
     const [data, setData] = useState(
         [...folderData, ...noteData].filter((item) => item.parentId === null)
     );
+    const [getdata, setgetData] = useState(null);
+
+    
+    useEffect(() => {
+        // GET 요청을 보내고 데이터를 가져옵니다.
+        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderDetail/')
+          .then(response => {
+            // setgetData(response.getdata);
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }, []);
+    
 
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
@@ -45,7 +64,16 @@ function Home({ navigation }) {
             parentId: currentFolder, // 현재 폴더를 부모로 설정
         };
         dispatch(add(newFolder));
+        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList')
+        .then(response => {
+          // setgetData(response.getdata);
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     };
+
 
     const handleFolderPress = useCallback(
         (folderId) => {
@@ -260,6 +288,8 @@ function Home({ navigation }) {
                         <Feather name="folder-plus" size={24} color="black" />
                     </View>
                 </TouchableOpacity>
+                
+                
             </View>
         </View>
     );

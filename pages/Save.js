@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+
 
 function Save({ navigation }) {
     const [loading, setLoading] = useState(true);
     const [completed, setCompleted] = useState(false);
+    
 
     useEffect(() => {
         setTimeout(() => {

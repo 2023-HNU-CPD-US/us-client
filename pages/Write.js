@@ -5,16 +5,32 @@ import {
     TextInput,
     TouchableOpacity,
     Keyboard,
-    TouchableWithoutFeedback,
+    TouchableWithoutFeedback
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import axios from 'axios';
+
 
 function Write({ navigation }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [textInputHeight, setTextInputHeight] = useState(0);
+
+    const sendData = () => {
+        const requestData = {
+            message:content
+        };
+        // POST 요청을 보내고 데이터를 전송합니다.
+        axios.post('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/', requestData)
+          .then(response => {
+            console.log('Data sent successfully!');
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      };
+      
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -65,7 +81,7 @@ function Write({ navigation }) {
                         onPress={() => navigation.navigate("저장")}
                     >
                         <View>
-                            <Ionicons
+                            <Ionicons onPress={sendData}
                                 name="checkmark"
                                 size={24}
                                 color="black"

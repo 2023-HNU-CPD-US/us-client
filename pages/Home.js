@@ -64,7 +64,7 @@ function Home({ navigation }) {
             parentId: currentFolder, // 현재 폴더를 부모로 설정
         };
         dispatch(add(newFolder));
-        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList')
+        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/')
         .then(response => {
           // setgetData(response.getdata);
           console.log(response.data);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 
@@ -7,6 +7,7 @@ import axios from "axios";
 function ExpoCamera({ navigation }) {
   const [imageUrl, setImageUrl] = useState('');
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -48,6 +49,7 @@ function ExpoCamera({ navigation }) {
 };
 
 const uploadImage = async (imageUri) => {
+  setIsLoading(true);
   try {
     const formData = new FormData();
     const imageFile = await fetch(imageUri);
@@ -72,9 +74,19 @@ const uploadImage = async (imageUri) => {
     // Process jsonResponse as required.
   } catch (error) {
     console.error('There was an error with the image upload: ', error);
+  } finally {
+    setIsLoading(false);
   }
 };
-
+return (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    {isLoading ? (
+      <ActivityIndicator size="large" color="#0000ff" />
+    ) : (
+      <View></View>
+    )}
+  </View>
+);
 }
 
 export default ExpoCamera;

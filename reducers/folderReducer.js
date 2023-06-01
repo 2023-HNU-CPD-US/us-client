@@ -1,49 +1,18 @@
+import axios from 'axios';
 import { createSlice } from "@reduxjs/toolkit";
 
+
 const initialState = {
-    folders: [
-        {
-            id: 1384602775573,
-            type: "folder",
-            name: "Food Recipes",
-            date: "2023-05-23T10:30:00",
-            parentId: null,
-        },
-        {
-            id: 1651612775573,
-            type: "folder",
-            name: "Project",
-            date: "2023-05-24T14:45:00",
-            parentId: null,
-        },
-        {
-            id: 1684602781573,
-            type: "folder",
-            name: "Secret",
-            date: "2023-05-22T09:20:00",
-            parentId: null,
-        },
-        {
-            id: 1812137775573,
-            type: "folder",
-            name: "Reference",
-            date: "2023-05-20T16:10:00",
-            parentId: null,
-        },
-        {
-            id: 8333602775573,
-            type: "folder",
-            name: "Test",
-            date: "2023-05-19T11:55:00",
-            parentId: 1651612775573,
-        },
-    ],
+    folders: [],
 };
 
 const folders = createSlice({
     name: "folderReducer",
     initialState,
     reducers: {
+        setFolders: (state, action) => {
+            state.folders = action.payload;
+        },
         add: (state, action) => {
             state.folders.unshift({
                 id: action.payload.id,
@@ -70,5 +39,26 @@ const folders = createSlice({
     },
 });
 
-export const { add, remove, rename } = folders.actions;
+export const { setFolders, add, remove, rename } = folders.actions;
+
+export const fetchFolders = () => async dispatch => {
+    const response = await axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/');
+    dispatch(setFolders(response.data));
+};
+
+export const addFolder = (folder) => async dispatch => {
+    const response = await axios.post('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/', folder);
+    dispatch(add(response.data));
+};
+
+export const removeFolder = (id) => async dispatch => {
+    await axios.delete(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/${id}`);
+    dispatch(remove({ id }));
+};
+
+export const renameFolder = (id, newName) => async dispatch => {
+    const response = await axios.patch(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/${id}`, { name: newName });
+    dispatch(rename({ id, newName: response.data.name }));
+};
+
 export const folderReducer = folders.reducer;

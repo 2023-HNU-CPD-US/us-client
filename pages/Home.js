@@ -11,6 +11,7 @@ import {
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { add } from "../reducers/folderReducer";
+import { fetchFolders, addFolder, removeFolder, renameFolder } from "../reducers/folderReducer";
 
 
 
@@ -37,24 +38,29 @@ function Home({ navigation }) {
     );
     const [getdata, setgetData] = useState(null);
 
-    
-    // useEffect(() => {
-    //     // GET 요청을 보내고 데이터를 가져옵니다.
-    //     axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderDetail/')
-    //       .then(response => {
-    //         // setgetData(response.getdata);
-    //         console.log(response.data);
-    //       })
-    //       .catch(error => {
-    //         console.error(error);
-    //       });
-    //   }, []);
-    
-
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
     const [sortOption, setSortOption] = useState("name");
+        // 폴더 리스트 가져오기
+    const handleFetchFolders = () => {
+        dispatch(fetchFolders());
+    };
+
+    // 폴더 추가하기
+    const NewhandleAddFolder = (folder) => {
+        dispatch(addFolder(folder));
+    };
+
+    // 폴더 삭제하기
+    const handleRemoveFolder = (id) => {
+        dispatch(removeFolder(id));
+    };
+
+    // 폴더 이름 변경하기
+    const handleRenameFolder = (id, newName) => {
+        dispatch(renameFolder(id, newName));
+    };
 
     const dispatch = useDispatch();
     const handleAddFolder = () => {
@@ -64,14 +70,6 @@ function Home({ navigation }) {
             parentId: currentFolder, // 현재 폴더를 부모로 설정
         };
         dispatch(add(newFolder));
-        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/')
-        .then(response => {
-          // setgetData(response.getdata);
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
     };
 
 

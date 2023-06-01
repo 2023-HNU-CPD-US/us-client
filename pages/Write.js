@@ -5,8 +5,7 @@ import {
     TextInput,
     TouchableOpacity,
     Keyboard,
-    TouchableWithoutFeedback,
-    ActivityIndicator
+    TouchableWithoutFeedback
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -17,7 +16,6 @@ import axios from 'axios';
 function Write({ navigation, route }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [loading, setLoading] = useState(false);
 
     const { serverResponse } = route.params || {};
 
@@ -39,19 +37,12 @@ function Write({ navigation, route }) {
           })
           .catch(error => {
             console.error(error);
-          })
-          .finally(() => {
-            setLoading(false); 
           });
       };
       
     const openGallery = () => {
         navigation.navigate("카메라");
     };
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />
-    }
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

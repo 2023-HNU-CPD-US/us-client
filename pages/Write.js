@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     StyleSheet,
     TextInput,
     TouchableOpacity,
     Keyboard,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    ActivityIndicator
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -13,9 +14,19 @@ import { Feather } from "@expo/vector-icons";
 import axios from 'axios';
 
 
-function Write({ navigation }) {
+function Write({ navigation, route }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const { serverResponse } = route.params || {};
+
+    useEffect(() => {
+        if (serverResponse) {
+            const serverResponseStr = typeof serverResponse === 'object' ? JSON.stringify(serverResponse) : serverResponse;
+            setContent(serverResponseStr.result);
+        }
+      }, [serverResponse]);
 
     const sendData = () => {
         const requestData = {
@@ -28,9 +39,19 @@ function Write({ navigation }) {
           })
           .catch(error => {
             console.error(error);
+          })
+          .finally(() => {
+            setLoading(false); 
           });
       };
       
+    const openGallery = () => {
+        navigation.navigate("카메라");
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />
+    }
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -43,7 +64,7 @@ function Write({ navigation }) {
                         placeholder={"제목을 입력하세요."}
                     ></TextInput>
                 </View>
-
+    
                 <View style={styles.contentWrap}>
                     <TextInput
                         style={styles.contentInput}
@@ -53,10 +74,10 @@ function Write({ navigation }) {
                         multiline
                     ></TextInput>
                 </View>
-
+    
                 <View style={styles.menu}>
                     <TouchableOpacity
-                        activeOpacity="0.6"
+                        activeOpacity={0.6}
                         style={{
                             ...styles.menuTab,
                             borderTopLeftRadius: 10,
@@ -64,15 +85,15 @@ function Write({ navigation }) {
                             borderRightWidth: 1,
                             borderRightColor: "#eee",
                         }}
-                        onPress={() => navigation.navigate("카메라")}
+                        onPress={openGallery}
                     >
                         <View>
                             <Feather name="camera" size={24} color="black" />
                         </View>
                     </TouchableOpacity>
-
+    
                     <TouchableOpacity
-                        activeOpacity="0.6"
+                        activeOpacity={0.6}
                         style={{
                             ...styles.menuTab,
                             borderTopRightRadius: 10,
@@ -92,9 +113,10 @@ function Write({ navigation }) {
             </View>
         </TouchableWithoutFeedback>
     );
+    
 }
 
-export default Write;
+
 const styles = StyleSheet.create({
     titleWrap: {
         flex: 1,
@@ -140,3 +162,4 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
 });
+export default Write;

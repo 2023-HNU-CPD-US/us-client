@@ -1,98 +1,80 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import { Camera } from "expo-camera";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
+import { Image } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 
+
 function ExpoCamera({ navigation }) {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const cameraRef = useRef(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === "granted");
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('권한이 없습니다.');
+        navigation.navigate("작성하기");
+      } else {
+        selectImage();
+      }
     })();
   }, []);
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      const { uri } = await cameraRef.current.takePictureAsync({
-        quality: 1,
-        exif: true,
-        skipProcessing: true,
-      });
-
-      const formData = new FormData();
-      formData.append("photo", {
-        uri,
-        name: "photo.jpg",
-        type: "image/jpeg",
-      });
-
-      try {
-        const response = await axios.post(
-          "https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          // Handle the successful response
-          console.log("Image uploaded successfully");
-
-          // Navigate back to the home screen
-          navigation.goBack();
-        } else {
-          // Handle errors if the request was not successful
-          console.log("Image upload failed");
-        }
-      } catch (error) {
-        // Handle any errors that occur during the request
-        console.error(error);
+  const selectImage = async () => {
+  try {
+    if (!status?.granted) {
+      const permission = await requestPermission();
+      if (!permission.granted) {
+        navigation.goBack();
+        return;
       }
     }
-  };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <Camera style={{ flex: 1 }} type={type} ref={cameraRef}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "transparent",
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 0.5,
-              alignItems: "flex-end",
-              alignSelf: "flex-end",
-              justifyContent: "center",
-              marginLeft: 70,
-              marginBottom: 25,
-            }}
-            onPress={takePicture}
-          >
-            <Ionicons name="radio-button-on" size={60} color="white" />
-          </TouchableOpacity>
-        </View>
-      </Camera>
-    </View>
-  );
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedAsset = result.assets[0];
+      setImageUrl(selectedAsset.uri); // Set the selected image URL
+      await uploadImage(selectedAsset.uri); // Call uploadImage
+    } else {
+      navigation.navigate("작성하기");
+    }
+  } catch (error) {
+    console.error('There was an error with the image selection: ', error);
+  }
+};
+
+const uploadImage = async (imageUri) => {
+  try {
+    const formData = new FormData();
+    const imageFile = await fetch(imageUri);
+    const blob = await imageFile.blob();
+
+    formData.append('file', {
+      name: 'image.jpg',
+      type: 'image/jpg',
+      uri: imageUri, 
+    });
+
+    const response = await axios.post('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/', formData);
+
+    if (response.status < 200 || response.status >= 300) {
+      console.log(response.status, response.data);
+      throw new Error('Network response was not ok');
+    }
+
+    const jsonResponse = response.data;
+    navigation.navigate('작성하기', { serverResponse: jsonResponse });
+
+    // Process jsonResponse as required.
+  } catch (error) {
+    console.error('There was an error with the image upload: ', error);
+  }
+};
+
 }
 
 export default ExpoCamera;

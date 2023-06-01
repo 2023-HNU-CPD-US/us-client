@@ -38,17 +38,17 @@ function Home({ navigation }) {
     const [getdata, setgetData] = useState(null);
 
     
-    useEffect(() => {
-        // GET 요청을 보내고 데이터를 가져옵니다.
-        axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderDetail/')
-          .then(response => {
-            // setgetData(response.getdata);
-            console.log(response.data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      }, []);
+    // useEffect(() => {
+    //     // GET 요청을 보내고 데이터를 가져옵니다.
+    //     axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderDetail/')
+    //       .then(response => {
+    //         // setgetData(response.getdata);
+    //         console.log(response.data);
+    //       })
+    //       .catch(error => {
+    //         console.error(error);
+    //       });
+    //   }, []);
     
 
     const [modalVisible, setModalVisible] = useState(false);

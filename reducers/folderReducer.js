@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { createSlice } from "@reduxjs/toolkit";
 
 
@@ -38,27 +37,5 @@ const folders = createSlice({
         },
     },
 });
-
-export const { setFolders, add, remove, rename } = folders.actions;
-
-export const fetchFolders = () => async dispatch => {
-    const response = await axios.get('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/');
-    dispatch(setFolders(response.data));
-};
-
-export const addFolder = (folder) => async dispatch => {
-    const response = await axios.post('https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/', folder);
-    dispatch(add(response.data));
-};
-
-export const removeFolder = (id) => async dispatch => {
-    await axios.delete(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/${id}`);
-    dispatch(remove({ id }));
-};
-
-export const renameFolder = (id, newName) => async dispatch => {
-    const response = await axios.patch(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/TextList/${id}`, { name: newName });
-    dispatch(rename({ id, newName: response.data.name }));
-};
 
 export const folderReducer = folders.reducer;

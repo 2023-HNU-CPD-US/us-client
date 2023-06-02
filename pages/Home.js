@@ -1,333 +1,228 @@
 import React, { useState, useCallback, useEffect } from "react";
 import {
-    StyleSheet,
-    View,
-    TextInput,
-    ScrollView,
-    TouchableOpacity,
-    ActionSheetIOS,
-    
+  StyleSheet,
+  View,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  ActionSheetIOS,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { add } from "../reducers/folderReducer";
-import { fetchFolders, addFolder, removeFolder, renameFolder } from "../reducers/folderReducer";
-
-
+import axios from 'axios';
 
 import Folder from "../components/Folder";
 import Note from "../components/Note";
 import SortModal from "../components/modal/SortModal";
 import NoDataImage from "../components/NoDataImage";
-import axios from 'axios';
 
 function Home({ navigation }) {
-    const folderData = useSelector((state) =>
-        state.folderReducer.folders
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name))
-    );
-    const noteData = useSelector((state) =>
-        state.noteReducer.notes
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name))
-    );
+  const folderData = useSelector((state) => state.folderReducer.folders);
+  const noteData = useSelector((state) => state.noteReducer.notes);
 
-    const [data, setData] = useState(
-        [...folderData, ...noteData].filter((item) => item.parentId === null)
-    );
-    const [getdata, setgetData] = useState(null);
+  const [data, setData] = useState([]);
+  const [getdata, setgetData] = useState(null);
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [searchText, setSearchText] = useState("");
-    const [currentFolder, setCurrentFolder] = useState(null);
-    const [sortOption, setSortOption] = useState("name");
-        // 폴더 리스트 가져오기
-    const handleFetchFolders = () => {
-        dispatch(fetchFolders());
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const [sortOption, setSortOption] = useState("name");
+
+  const dispatch = useDispatch();
+
+  const handleAddFolder = useCallback(() => {
+    const newFolder = {
+      id: Date.now(), // 임의의 고유 ID 생성
+      name: "새 폴더",
+      parentId: currentFolder, // 현재 폴더를 부모로 설정
     };
 
-    // 폴더 추가하기
-    const NewhandleAddFolder = (folder) => {
-        dispatch(addFolder(folder));
-    };
+    axios
+      .post("https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/", newFolder)
+      .then((response) => {
+        dispatch(add(response.data));
+      })
+      .catch((error) => {
+        console.log("Error adding folder:", error);
+      });
+  }, [currentFolder, dispatch]);
 
-    // 폴더 삭제하기
-    const handleRemoveFolder = (id) => {
-        dispatch(removeFolder(id));
-    };
+  const handleFolderPress = useCallback((folderId) => {
+    setCurrentFolder(folderId);
+  }, []);
 
-    // 폴더 이름 변경하기
-    const handleRenameFolder = (id, newName) => {
-        dispatch(renameFolder(id, newName));
-    };
+  const handleGoBack = useCallback(() => {
+    if (currentFolder) {
+      const parentFolder = folderData.find((folder) => folder.id === currentFolder);
+      if (parentFolder) {
+        setCurrentFolder(parentFolder.parentId);
+      }
+    }
+  }, [currentFolder, folderData]);
 
-    const dispatch = useDispatch();
-    const handleAddFolder = () => {
-        const newFolder = {
-            id: Date.now(), // 임의의 고유 ID 생성
-            name: "새 폴더",
-            parentId: currentFolder, // 현재 폴더를 부모로 설정
-        };
-        dispatch(add(newFolder));
-    };
+  useEffect(() => {
+    const filteredData = [...folderData, ...noteData].filter((item) => item.parentId === currentFolder);
+    const sortedData = filteredData.sort((a, b) => a.name.localeCompare(b.name));
 
+    setData(sortedData);
+  }, [folderData, noteData, currentFolder]);
 
-    const handleFolderPress = useCallback(
-        (folderId) => {
-            const filteredData = [...folderData, ...noteData].filter(
-                (item) => item.parentId === folderId
-            );
-            setData(filteredData);
-            setCurrentFolder(folderId);
+  const modalOpen = useCallback(() => {
+    if (Platform.OS === "android") {
+      setModalVisible(true);
+    } else {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["최신순", "이름순", "취소"],
+          cancelButtonIndex: 2,
         },
-        [folderData, noteData]
-    );
-
-    const handleGoBack = useCallback(() => {
-        if (currentFolder) {
-            const parentFolder = folderData.find(
-                (folder) => folder.id === currentFolder
-            );
-            if (parentFolder) {
-                setCurrentFolder(parentFolder.parentId);
-                handleFolderPress(parentFolder.parentId);
-            }
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            setSortOption("date");
+          } else if (buttonIndex === 1) {
+            setSortOption("name");
+          }
         }
-    }, [currentFolder, folderData, handleFolderPress]);
+      );
+    }
+  }, []);
 
-    const renderPairs = (renderData) => {
-        const pairs = [];
-        if (renderData.length) {
-            for (let i = 0; i < renderData.length; i += 2) {
-                const first = renderData[i];
-                const second = renderData[i + 1];
-                const pair = (
-                    <View key={i} style={styles.listRow}>
-                        {first.type === "folder" ? (
-                            <Folder
-                                id={first.id}
-                                name={first.name}
-                                onPress={() => handleFolderPress(first.id)}
-                            />
-                        ) : (
-                            <Note
-                                id={first.id}
-                                name={first.name}
-                                content={first.content}
-                            />
-                        )}
-                        {second && (
-                            <>
-                                {second.type === "folder" ? (
-                                    <Folder
-                                        id={second.id}
-                                        name={second.name}
-                                        onPress={() =>
-                                            handleFolderPress(second.id)
-                                        }
-                                    />
-                                ) : (
-                                    <Note
-                                        id={second.id}
-                                        name={second.name}
-                                        content={second.content}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </View>
+  const handleSearchSubmit = useCallback(() => {
+    if (searchText === "") {
+      const filteredData = [...folderData, ...noteData].filter((item) => item.parentId === null);
+      setData(filteredData);
+    } else {
+      const filteredData = [...folderData, ...noteData].filter((item) =>
+        item.name.includes(searchText)
+      );
+      setData(filteredData);
+    }
+  }, [searchText, folderData, noteData]);
+
+  return (
+    <View style={styles.home}>
+      <View style={styles.header}>
+        {currentFolder && (
+          <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={20} color="#555" />
+          </TouchableOpacity>
+        )}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="검색어를 입력하세요."
+          onChangeText={(text) => setSearchText(text)}
+          onSubmitEditing={handleSearchSubmit}
+          value={searchText}
+        />
+        <TouchableOpacity onPress={modalOpen} style={styles.sortButton}>
+          <FontAwesome name="sort-amount-desc" size={20} color="#555" />
+          <SortModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            setSortOption={setSortOption}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.list}>
+        <View style={styles.row}>
+          {data.length ? (
+            data.map((item) => {
+              if (item.type === "folder") {
+                return (
+                  <Folder
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    onPress={() => handleFolderPress(item.id)}
+                  />
                 );
-                pairs.push(pair);
-            }
-        } else {
-            const pair = <NoDataImage />;
-            pairs.push(pair);
-        }
-        return pairs;
-    };
-
-    useEffect(() => {
-        const sortedFolders = folderData
-            .filter((item) => item.parentId === currentFolder)
-            .sort((a, b) => a.name.localeCompare(b.name));
-        const sortedNotes = noteData
-            .filter((item) => item.parentId === currentFolder)
-            .sort((a, b) => a.name.localeCompare(b.name));
-
-        let sortedData = [];
-        if (sortOption === "name") {
-            sortedData = [...sortedFolders, ...sortedNotes];
-        } else if (sortOption === "date") {
-            const sortedFolderData = sortedFolders.sort(
-                (a, b) => new Date(b.date) - new Date(a.date)
-            );
-            const sortedNoteData = sortedNotes.sort(
-                (a, b) => new Date(b.date) - new Date(a.date)
-            );
-            sortedData = [...sortedFolderData, ...sortedNoteData];
-        }
-
-        setData(sortedData);
-    }, [sortOption]);
-
-    const modalOpen = useCallback(() => {
-        if (Platform.OS === "android") {
-            setModalVisible(true);
-        } else {
-            ActionSheetIOS.showActionSheetWithOptions(
-                {
-                    options: ["최신순", "이름순", "취소"],
-                    cancelButtonIndex: 2,
-                },
-                (buttonIndex) => {
-                    if (buttonIndex === 0) {
-                        setSortOption("date");
-                    } else if (buttonIndex === 1) {
-                        setSortOption("name");
-                    }
-                }
-            );
-        }
-    }, []);
-
-    const handleSearchSubmit = () => {
-        if (searchText === "") {
-            setData(
-                [...folderData, ...noteData].filter(
-                    (item) => item.parentId === null
-                )
-            );
-        } else {
-            const filteredData = [...folderData, ...noteData].filter((item) =>
-                item.name.includes(searchText)
-            );
-            setData(filteredData);
-        }
-    };
-
-    return (
-        <View style={styles.home}>
-            <View
-                style={{
-                    paddingHorizontal: 20,
-                    paddingTop: 20,
-                    flexDirection: "row",
-                    alignItems: "center",
-                }}
-            >
-                {currentFolder && (
-                    <TouchableOpacity
-                        onPress={handleGoBack}
-                        style={{ marginRight: 10 }}
-                    >
-                        <FontAwesome name="arrow-left" size={20} color="#555" />
-                    </TouchableOpacity>
-                )}
-                <TextInput
-                    style={{
-                        flex: 9,
-                        height: 40,
-                        backgroundColor: "white",
-                        paddingHorizontal: 10,
-                        borderRadius: 5,
-                    }}
-                    placeholder="검색어를 입력하세요."
-                    onChangeText={(text) => setSearchText(text)}
-                    onSubmitEditing={handleSearchSubmit}
-                    returnKeyType="search"
-                    value={searchText}
-                />
-                <TouchableOpacity style={{ flex: 1 }} onPress={modalOpen}>
-                    <FontAwesome
-                        name="sort-amount-desc"
-                        size={20}
-                        color="#555"
-                        style={{
-                            textAlign: "center",
-                        }}
-                    />
-                    <SortModal
-                        visible={modalVisible}
-                        onClose={() => setModalVisible(false)}
-                        setSortOption={setSortOption}
-                    />
-                </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.list}>{renderPairs(data)}</ScrollView>
-
-            <View style={styles.menu}>
-                <TouchableOpacity
-                    activeOpacity="0.6"
-                    style={{
-                        ...styles.menuTab,
-                        borderTopLeftRadius: 10,
-                        borderBottomLeftRadius: 10,
-                        borderRightWidth: 1,
-                        borderRightColor: "#eee",
-                    }}
-                    onPress={() => navigation.navigate("작성하기")}
-                >
-                    <View>
-                        <Feather name="file-plus" size={24} color="black" />
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    activeOpacity="0.6"
-                    style={{
-                        ...styles.menuTab,
-                        borderTopRightRadius: 10,
-                        borderBottomRightRadius: 10,
-                    }}
-                    onPress={handleAddFolder}
-                >
-                    <View>
-                        <Feather name="folder-plus" size={24} color="black" />
-                    </View>
-                </TouchableOpacity>
-                
-                
-            </View>
+              } else {
+                return (
+                  <Note
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    content={item.content}
+                  />
+                );
+              }
+            })
+          ) : (
+            <NoDataImage />
+          )}
         </View>
-    );
+      </ScrollView>
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate("작성하기")}
+        >
+          <Feather name="file-plus" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleAddFolder}
+        >
+          <Feather name="folder-plus" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    home: {
-        width: "100%",
-        height: "100%",
-    },
-    list: {
-        width: "100%",
-        paddingHorizontal: 20,
-        marginBottom: 90,
-    },
-    listRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 15,
-    },
-    menu: {
-        position: "absolute",
-        left: "0%",
-        bottom: 10,
-        flexDirection: "row",
-        // borderRadius: 10,
-        shadowColor: "#000",
-        shadowOpacity: 0.06,
-        shadowOffset: {
-            width: 10,
-            height: 10,
-        },
-        paddingHorizontal: 20,
-    },
-    menuTab: {
-        backgroundColor: "#fff",
-        flex: 1,
-        alignItems: "center",
-        paddingVertical: 20,
-    },
+  home: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    backgroundColor: "white",
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  sortButton: {
+    marginLeft: 10,
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 90,
+  },
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  footer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    position: "absolute",
+    bottom: 10,
+    left: 0,
+    right: 0,
+  },
+  addButton: {
+    backgroundColor: "#fff",
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 20,
+    borderRadius: 10,
+    marginRight: 10,
+  },
 });
 
 export default Home;

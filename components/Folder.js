@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/folderReducer";
+import axios from "axios";
 
 import { Entypo } from "@expo/vector-icons";
 import MenuModal from "./modal/MenuModal";
@@ -37,10 +38,7 @@ function Folder({ id, name, onPress }) {
                     if (buttonIndex === 0) {
                         setisRenameing(true);
                     } else if (buttonIndex === 1) {
-                        const removeFolder = {
-                            id,
-                        };
-                        dispatch(remove(removeFolder));
+                        deleteFolder();
                     }
                 }
             );
@@ -53,25 +51,49 @@ function Folder({ id, name, onPress }) {
         }
     }, [isRenaming]);
 
-    const handleRenameSubmit = ({ nativeEvent }) => {
-        const { text } = nativeEvent;
+    const handleRenameSubmit = () => {
         const renameFolder = {
             id,
-            newName: text,
+            newName: newName.trim(),
         };
-        dispatch(rename(renameFolder));
 
-        setisRenameing(false);
+        axios
+            .put(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/
+            /${id}`, renameFolder)
+            .then((response) => {
+                dispatch(rename(response.data)); 
+            })
+            .catch((error) => {
+                console.log("Error renaming folder:", error);
+            })
+            .finally(() => {
+                setisRenameing(false);
+            });
+    };
+
+    const deleteFolder = () => {
+        axios
+            .delete(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/
+            /${id}`)
+            .then(() => {
+                const removeFolder = {
+                    id,
+                };
+                dispatch(remove(removeFolder));
+            })
+            .catch((error) => {
+                console.log("Error deleting folder:", error);
+            });
     };
 
     return (
         <TouchableOpacity
-            activeOpacity="0.6"
+            activeOpacity={0.6}
             style={styles.folder}
             onPress={onPress}
         >
             <TouchableOpacity
-                activeOpacity="0.6"
+                activeOpacity={0.6}
                 style={styles.folderMenu}
                 onPress={modalOpen}
             >
@@ -121,7 +143,7 @@ const styles = StyleSheet.create({
     },
     folderName: {
         fontSize: 15,
-        fontWeight: 600,
+        fontWeight: "600",
         marginTop: 5,
     },
     renameInput: {

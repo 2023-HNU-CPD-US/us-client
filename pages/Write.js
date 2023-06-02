@@ -22,7 +22,7 @@ function Write({ navigation, route }) {
     useEffect(() => {
         if (serverResponse) {
             const serverResponseStr = typeof serverResponse === 'object' ? JSON.stringify(serverResponse) : serverResponse;
-            setContent(serverResponseStr.result);
+            setContent(serverResponseStr);
         }
       }, [serverResponse]);
 

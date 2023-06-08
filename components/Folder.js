@@ -9,10 +9,12 @@ import {
     ActionSheetIOS,
     Keyboard,
 } from "react-native";
+import axios from "axios";
+
 import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/folderReducer";
 
-import { Entypo } from "@expo/vector-icons";
+import { Icon } from "@rneui/themed";
 import MenuModal from "./modal/MenuModal";
 
 function Folder({ id, name, onPress }) {
@@ -57,11 +59,24 @@ function Folder({ id, name, onPress }) {
         const { text } = nativeEvent;
         const renameFolder = {
             id,
-            newName: text,
+            newName: text.trim(),
         };
-        dispatch(rename(renameFolder));
+        console.log(renameFolder);
 
-        setisRenameing(false);
+        axios
+            .put(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/PutFolder/${id}/`,
+                renameFolder
+            )
+            .then((response) => {
+                dispatch(rename(response.data));
+            })
+            .catch((error) => {
+                console.log("Error renaming folder:", error);
+            })
+            .finally(() => {
+                setisRenameing(false);
+            });
     };
 
     return (
@@ -75,7 +90,12 @@ function Folder({ id, name, onPress }) {
                 style={styles.folderMenu}
                 onPress={modalOpen}
             >
-                <Entypo name="dots-three-vertical" size={18} color="#777" />
+                <Icon
+                    name="dots-three-vertical"
+                    type="entypo"
+                    size={18}
+                    color="#777"
+                />
                 <MenuModal
                     id={id}
                     type="folder"

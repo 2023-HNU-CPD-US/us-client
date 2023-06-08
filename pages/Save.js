@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "@rneui/themed";
 
 function Save({ navigation }) {
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,12 @@ function Save({ navigation }) {
                 </View>
             ) : completed ? (
                 <View style={styles.completed}>
-                    <Ionicons name="checkmark-circle" size={72} color="green" />
+                    <Icon
+                        name="check-circle"
+                        type="feather"
+                        size={72}
+                        color="green"
+                    />
                     <Text style={styles.completedText}>
                         저장이 완료되었습니다!
                     </Text>

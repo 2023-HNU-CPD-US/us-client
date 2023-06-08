@@ -10,7 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import { remove, rename } from "../reducers/noteReducer";
 
-import { Entypo } from "@expo/vector-icons";
+import { Icon } from "@rneui/themed";
 import MenuModal from "./modal/MenuModal";
 
 const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
@@ -70,7 +70,12 @@ function Note({ id, name, content }) {
                 style={styles.noteMenu}
                 onPress={modalOpen}
             >
-                <Entypo name="dots-three-vertical" size={18} color="#777" />
+                <Icon
+                    name="dots-three-vertical"
+                    type="entypo"
+                    size={18}
+                    color="#777"
+                />
                 <MenuModal
                     id={id}
                     type="note"

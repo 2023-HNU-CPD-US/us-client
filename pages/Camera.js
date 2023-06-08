@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Icon } from "@rneui/themed";
 
 function ExpoCamera({ navigation }) {
     const [hasPermission, setHasPermission] = useState(null);
@@ -54,8 +54,9 @@ function ExpoCamera({ navigation }) {
                         }}
                         onPress={takePicture}
                     >
-                        <Ionicons
+                        <Icon
                             name="radio-button-on"
+                            type="ionicons"
                             size={60}
                             color="white"
                         />

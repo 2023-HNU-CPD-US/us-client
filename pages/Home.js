@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import axios from "axios";
 
-import { Feather, FontAwesome } from "@expo/vector-icons";
-// import Icon from "react-native-vector-icons/Ionicons";
+import { Icon } from "@rneui/themed";
+
 import { useSelector, useDispatch } from "react-redux";
 import { add } from "../reducers/folderReducer";
 
@@ -222,7 +222,12 @@ function Home({ navigation }) {
                         onPress={handleGoBack}
                         style={{ marginRight: 10 }}
                     >
-                        <FontAwesome name="arrow-left" size={20} color="#555" />
+                        <Icon
+                            name="arrow-left"
+                            type="font-awesome"
+                            size={20}
+                            color="#555"
+                        />
                     </TouchableOpacity>
                 )}
                 <TextInput
@@ -240,8 +245,9 @@ function Home({ navigation }) {
                     value={searchText}
                 />
                 <TouchableOpacity style={{ flex: 1 }} onPress={modalOpen}>
-                    <FontAwesome
+                    <Icon
                         name="sort-amount-desc"
+                        type="font-awesome"
                         size={20}
                         color="#555"
                         style={{
@@ -271,8 +277,12 @@ function Home({ navigation }) {
                     onPress={() => navigation.navigate("작성하기")}
                 >
                     <View>
-                        {/* <Icon name="file-plus" size={30} color="#4F8EF7" /> */}
-                        <Feather name="file-plus" size={24} color="black" />
+                        <Icon
+                            name="file-plus"
+                            type="feather"
+                            size={24}
+                            color="black"
+                        />
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -285,7 +295,12 @@ function Home({ navigation }) {
                     onPress={handleAddFolder}
                 >
                     <View>
-                        <Feather name="folder-plus" size={24} color="black" />
+                        <Icon
+                            name="folder-plus"
+                            type="feather"
+                            size={24}
+                            color="black"
+                        />
                     </View>
                 </TouchableOpacity>
             </View>

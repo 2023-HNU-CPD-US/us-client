@@ -8,8 +8,7 @@ import {
     TouchableWithoutFeedback,
 } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
+import { Icon } from "@rneui/themed";
 
 function Write({ navigation }) {
     const [title, setTitle] = useState("");
@@ -51,7 +50,12 @@ function Write({ navigation }) {
                         onPress={() => navigation.navigate("카메라")}
                     >
                         <View>
-                            <Feather name="camera" size={24} color="black" />
+                            <Icon
+                                name="camera"
+                                type="feather"
+                                size={24}
+                                color="black"
+                            />
                         </View>
                     </TouchableOpacity>
 
@@ -65,8 +69,9 @@ function Write({ navigation }) {
                         onPress={() => navigation.navigate("저장")}
                     >
                         <View>
-                            <Ionicons
-                                name="checkmark"
+                            <Icon
+                                name="check"
+                                type="feather"
                                 size={24}
                                 color="black"
                             />

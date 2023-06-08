@@ -7,6 +7,8 @@ import {
     TouchableOpacity,
     ActionSheetIOS,
 } from "react-native";
+import axios from "axios";
+
 import { Feather, FontAwesome } from "@expo/vector-icons";
 // import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,10 +28,10 @@ function Home({ navigation }) {
     const noteData = useSelector((state) =>
         state.note.notes.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
+    console.log(folderData);
 
     const [data, setData] = useState(
         [...folderData, ...noteData].filter((item) => {
-            console.log(item.parentId);
             return item.parentId === null;
         })
     );
@@ -50,7 +52,19 @@ function Home({ navigation }) {
             parentId: currentFolder, // 현재 폴더를 부모로 설정
             created_at: formattedDate,
         };
-        dispatch(add(newFolder));
+        // dispatch(add(newFolder));
+
+        axios
+            .post(
+                "https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/AddFolder/",
+                newFolder
+            )
+            .then((response) => {
+                dispatch(add(response.data));
+            })
+            .catch((error) => {
+                console.log("Error adding folder:", error);
+            });
     };
 
     const handleFolderPress = useCallback(

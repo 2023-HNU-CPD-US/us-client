@@ -10,13 +10,15 @@ const folderSlice = createSlice({
     initialState,
     reducers: {
         add: (state, action) => {
-            state.folders.unshift({
-                id: action.payload.id,
-                type: "folder",
-                name: action.payload.name,
-                parentId: action.payload.parentId,
-                created_at: action.payload.created_at,
-            });
+            const { id, name, parentId, created_at } = action.payload;
+            const newFolder = {
+                id,
+                type: "Folder",
+                name,
+                parentId,
+                created_at,
+            };
+            state.folders = [newFolder, ...state.folders];
         },
         remove: (state, action) => {
             state.folders = state.folders.filter(

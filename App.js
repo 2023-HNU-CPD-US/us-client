@@ -1,8 +1,8 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image } from "react-native";
 
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./reducers/index";
 
 import { createStackNavigator } from "@react-navigation/stack";
@@ -12,8 +12,9 @@ import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
 import SaveScreen from "./pages/Save";
 import CameraScreen from "./pages/Camera";
+import Loading from "./components/Loading";
 
-const store = createStore(rootReducer);
+import { fetchData } from "./actions";
 
 const Stack = createStackNavigator();
 
@@ -26,7 +27,33 @@ const LogoTitle = () => {
     );
 };
 
+const store = configureStore({
+    reducer: rootReducer,
+});
+
 export default function App() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDataFromServer = async () => {
+            try {
+                await store.dispatch(fetchData());
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, 1000);
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false);
+            }
+        };
+
+        fetchDataFromServer();
+    }, []);
+
+    if (isLoading) {
+        return <Loading />;
+    }
+
     return (
         <Provider store={store}>
             <NavigationContainer>

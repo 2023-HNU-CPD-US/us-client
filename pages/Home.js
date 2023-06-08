@@ -8,6 +8,7 @@ import {
     ActionSheetIOS,
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+// import Icon from "react-native-vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
 import { add } from "../reducers/folderReducer";
 
@@ -18,18 +19,19 @@ import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
     const folderData = useSelector((state) =>
-        state.folderReducer.folders
+        state.folder.folders
             .slice()
             .sort((a, b) => a.name.localeCompare(b.name))
     );
     const noteData = useSelector((state) =>
-        state.noteReducer.notes
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name))
+        state.note.notes.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
 
     const [data, setData] = useState(
-        [...folderData, ...noteData].filter((item) => item.parentId === null)
+        [...folderData, ...noteData].filter((item) => {
+            console.log(item.parentId);
+            return item.parentId === null;
+        })
     );
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -39,10 +41,14 @@ function Home({ navigation }) {
 
     const dispatch = useDispatch();
     const handleAddFolder = () => {
+        let currentDate = new Date();
+        let formattedDate = currentDate.toISOString().slice(0, -1);
+
         const newFolder = {
             id: Date.now(), // 임의의 고유 ID 생성
             name: "새 폴더",
             parentId: currentFolder, // 현재 폴더를 부모로 설정
+            created_at: formattedDate,
         };
         dispatch(add(newFolder));
     };
@@ -77,15 +83,20 @@ function Home({ navigation }) {
                 const first = renderData[i];
                 const second = renderData[i + 1];
                 const pair = (
-                    <View key={i} style={styles.listRow}>
-                        {first.type === "folder" ? (
+                    <View
+                        key={`${first.id}-${second ? second.id : ""}`}
+                        style={styles.listRow}
+                    >
+                        {first.type === "Folder" ? (
                             <Folder
+                                key={first.id}
                                 id={first.id}
                                 name={first.name}
                                 onPress={() => handleFolderPress(first.id)}
                             />
                         ) : (
                             <Note
+                                key={first.id}
                                 id={first.id}
                                 name={first.name}
                                 content={first.content}
@@ -93,8 +104,9 @@ function Home({ navigation }) {
                         )}
                         {second && (
                             <>
-                                {second.type === "folder" ? (
+                                {second.type === "Folder" ? (
                                     <Folder
+                                        key={second.id}
                                         id={second.id}
                                         name={second.name}
                                         onPress={() =>
@@ -103,6 +115,7 @@ function Home({ navigation }) {
                                     />
                                 ) : (
                                     <Note
+                                        key={second.id}
                                         id={second.id}
                                         name={second.name}
                                         content={second.content}
@@ -115,7 +128,7 @@ function Home({ navigation }) {
                 pairs.push(pair);
             }
         } else {
-            const pair = <NoDataImage />;
+            const pair = <NoDataImage key="nodata" />;
             pairs.push(pair);
         }
         return pairs;
@@ -134,10 +147,10 @@ function Home({ navigation }) {
             sortedData = [...sortedFolders, ...sortedNotes];
         } else if (sortOption === "date") {
             const sortedFolderData = sortedFolders.sort(
-                (a, b) => new Date(b.date) - new Date(a.date)
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
             );
             const sortedNoteData = sortedNotes.sort(
-                (a, b) => new Date(b.date) - new Date(a.date)
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
             );
             sortedData = [...sortedFolderData, ...sortedNoteData];
         }
@@ -244,6 +257,7 @@ function Home({ navigation }) {
                     onPress={() => navigation.navigate("작성하기")}
                 >
                     <View>
+                        {/* <Icon name="file-plus" size={30} color="#4F8EF7" /> */}
                         <Feather name="file-plus" size={24} color="black" />
                     </View>
                 </TouchableOpacity>

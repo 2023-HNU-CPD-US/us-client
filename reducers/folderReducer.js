@@ -1,47 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchData } from "../actions/index";
 
 const initialState = {
-    folders: [
-        {
-            id: 1384602775573,
-            type: "folder",
-            name: "Food Recipes",
-            date: "2023-05-23T10:30:00",
-            parentId: null,
-        },
-        {
-            id: 1651612775573,
-            type: "folder",
-            name: "Project",
-            date: "2023-05-24T14:45:00",
-            parentId: null,
-        },
-        {
-            id: 1684602781573,
-            type: "folder",
-            name: "Secret",
-            date: "2023-05-22T09:20:00",
-            parentId: null,
-        },
-        {
-            id: 1812137775573,
-            type: "folder",
-            name: "Reference",
-            date: "2023-05-20T16:10:00",
-            parentId: null,
-        },
-        {
-            id: 8333602775573,
-            type: "folder",
-            name: "Test",
-            date: "2023-05-19T11:55:00",
-            parentId: 1651612775573,
-        },
-    ],
+    folders: [],
 };
 
-const folders = createSlice({
-    name: "folderReducer",
+const folderSlice = createSlice({
+    name: "folder",
     initialState,
     reducers: {
         add: (state, action) => {
@@ -49,15 +14,14 @@ const folders = createSlice({
                 id: action.payload.id,
                 type: "folder",
                 name: action.payload.name,
+                parentId: action.payload.parentId,
+                created_at: action.payload.created_at,
             });
         },
         remove: (state, action) => {
-            return {
-                ...state,
-                folders: state.folders.filter(
-                    (folder) => folder.id !== action.payload.id
-                ),
-            };
+            state.folders = state.folders.filter(
+                (folder) => folder.id !== action.payload.id
+            );
         },
         rename: (state, action) => {
             const folder = state.folders.find(
@@ -68,7 +32,12 @@ const folders = createSlice({
             }
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.folders = action.payload.folder;
+        });
+    },
 });
 
-export const { add, remove, rename } = folders.actions;
-export const folderReducer = folders.reducer;
+export const { add, remove, rename } = folderSlice.actions;
+export default folderSlice.reducer;

@@ -30,7 +30,7 @@ const folderSlice = createSlice({
                 (folder) => folder.id === action.payload.id
             );
             if (folder) {
-                folder.name = action.payload.newName;
+                folder.name = action.payload.name;
             }
         },
     },

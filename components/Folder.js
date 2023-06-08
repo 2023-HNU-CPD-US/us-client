@@ -59,7 +59,7 @@ function Folder({ id, name, onPress }) {
         const { text } = nativeEvent;
         const renameFolder = {
             id,
-            newName: text.trim(),
+            name: text.trim(),
         };
         console.log(renameFolder);
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -10,10 +10,17 @@ import {
 
 import { Icon } from "@rneui/themed";
 
-function Write({ navigation }) {
+function Write({ navigation, route }) {
+    const { serverResponse } = route?.params;
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [textInputHeight, setTextInputHeight] = useState(0);
+
+    useEffect(() => {
+        if (serverResponse?.result) {
+            setContent(serverResponse.result);
+        }
+    }, [serverResponse?.result]);
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -39,7 +46,7 @@ function Write({ navigation }) {
 
                 <View style={styles.menu}>
                     <TouchableOpacity
-                        activeOpacity="0.6"
+                        activeOpacity={0.6}
                         style={{
                             ...styles.menuTab,
                             borderTopLeftRadius: 10,
@@ -60,7 +67,7 @@ function Write({ navigation }) {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        activeOpacity="0.6"
+                        activeOpacity={0.6}
                         style={{
                             ...styles.menuTab,
                             borderTopRightRadius: 10,
@@ -84,6 +91,7 @@ function Write({ navigation }) {
 }
 
 export default Write;
+
 const styles = StyleSheet.create({
     titleWrap: {
         flex: 1,

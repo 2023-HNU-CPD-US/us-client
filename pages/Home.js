@@ -284,7 +284,11 @@ function Home({ navigation }) {
                         borderRightWidth: 1,
                         borderRightColor: "#eee",
                     }}
-                    onPress={() => navigation.navigate("작성하기")}
+                    onPress={() =>
+                        navigation.navigate("작성하기", {
+                            serverResponse: null,
+                        })
+                    }
                 >
                     <View>
                         <Icon

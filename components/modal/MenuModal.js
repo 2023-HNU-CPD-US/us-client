@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+
 import {
     remove as noteRemove,
     rename as noteRename,
@@ -23,9 +25,22 @@ export default function MenuModal({
         const remove = {
             id,
         };
-        if (type == "note") dispatch(noteRemove(remove));
-        else dispatch(folderRemove(remove));
-        onClose();
+
+        if (type == "note") {
+            dispatch(noteRemove(remove));
+        } else {
+            axios
+                .delete(
+                    `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteFolder/${id}`
+                )
+                .then(() => {
+                    dispatch(folderRemove(remove));
+                    onClose();
+                })
+                .catch((error) => {
+                    console.log("Error deleting folder:", error);
+                });
+        }
     };
 
     return (

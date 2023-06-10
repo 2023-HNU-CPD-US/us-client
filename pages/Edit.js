@@ -1,31 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
     View,
+    Text,
     StyleSheet,
     TextInput,
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
-    Text,
     Modal,
     Button,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { update } from "../reducers/noteReducer";
 
 import { Icon } from "@rneui/themed";
 
-function Write({ navigation, route }) {
-    const { serverResponse, parentId } = route?.params || {};
+function Edit({ navigation, route }) {
+    const { selected } = route.params;
 
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
+    const [title, setTitle] = useState(selected.name);
+    const [content, setContent] = useState(selected.content);
     const [errorMessage, setErrorMessage] = useState("");
     const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 
-    useEffect(() => {
-        if (serverResponse?.result) {
-            setContent(serverResponse.result);
-        }
-    }, [serverResponse?.result]);
+    const dispatch = useDispatch();
 
     const handleSave = () => {
         if (title.trim() === "" || content.trim() === "") {
@@ -34,7 +33,26 @@ function Write({ navigation, route }) {
             return;
         }
 
-        navigation.navigate("저장하기", { title, content, parentId });
+        const editNote = {
+            id: selected.id,
+            name: title.trim(),
+            content: content.trim(),
+        };
+
+        axios
+            .put(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/PutText/${selected.id}/`,
+                editNote
+            )
+            .then((response) => {
+                dispatch(update(response.data));
+            })
+            .catch((error) => {
+                console.log("Error renaming note:", error);
+            })
+            .finally(() => {
+                navigation.navigate("노트", { selected: selected });
+            });
     };
 
     const closeModal = () => {
@@ -63,47 +81,12 @@ function Write({ navigation, route }) {
                     ></TextInput>
                 </View>
 
-                <View style={styles.menu}>
-                    <TouchableOpacity
-                        activeOpacity={0.6}
-                        style={{
-                            ...styles.menuTab,
-                            borderTopLeftRadius: 10,
-                            borderBottomLeftRadius: 10,
-                            borderRightWidth: 1,
-                            borderRightColor: "#eee",
-                        }}
-                        onPress={() => navigation.navigate("카메라")}
-                    >
-                        <View>
-                            <Icon
-                                name="camera"
-                                type="feather"
-                                size={24}
-                                color="black"
-                            />
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        activeOpacity={0.6}
-                        style={{
-                            ...styles.menuTab,
-                            borderTopRightRadius: 10,
-                            borderBottomRightRadius: 10,
-                        }}
-                        onPress={handleSave}
-                    >
-                        <View>
-                            <Icon
-                                name="check"
-                                type="feather"
-                                size={24}
-                                color="black"
-                            />
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={handleSave}
+                >
+                    <Icon name="check" type="feather" size={24} color="black" />
+                </TouchableOpacity>
 
                 <Modal
                     visible={isErrorModalVisible}
@@ -124,8 +107,6 @@ function Write({ navigation, route }) {
     );
 }
 
-export default Write;
-
 const styles = StyleSheet.create({
     titleWrap: {
         flex: 1,
@@ -142,7 +123,7 @@ const styles = StyleSheet.create({
         flex: 12,
         backgroundColor: "white",
         paddingHorizontal: 15,
-        paddingBottom: 100,
+        paddingBottom: 15,
     },
     contentInput: {
         height: "100%",
@@ -150,25 +131,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingTop: 15,
         paddingHorizontal: 10,
-    },
-    menu: {
-        position: "absolute",
-        left: "0%",
-        bottom: 20,
-        flexDirection: "row",
-        shadowColor: "#000",
-        shadowOpacity: 0.06,
-        shadowOffset: {
-            width: 10,
-            height: 10,
-        },
-        paddingHorizontal: 20,
-    },
-    menuTab: {
-        backgroundColor: "#fff",
-        flex: 1,
-        alignItems: "center",
-        paddingVertical: 20,
     },
 
     modalContainer: {
@@ -183,4 +145,23 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     errorMessage: { marginBottom: 20 },
+    saveButton: {
+        position: "absolute",
+        bottom: 20,
+        right: 20,
+        backgroundColor: "#fff",
+        borderRadius: 50,
+        width: 50,
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowOffset: {
+            width: 10,
+            height: 10,
+        },
+    },
 });
+
+export default Edit;

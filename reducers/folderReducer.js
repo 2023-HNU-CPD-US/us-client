@@ -1,41 +1,45 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import { fetchData } from "../actions/index";
 
 const initialState = {
     folders: [],
 };
 
-const folders = createSlice({
-    name: "folderReducer",
+const folderSlice = createSlice({
+    name: "folder",
     initialState,
     reducers: {
-        setFolders: (state, action) => {
-            state.folders = action.payload;
-        },
         add: (state, action) => {
-            state.folders.unshift({
-                id: action.payload.id,
-                type: "folder",
-                name: action.payload.name,
-            });
+            const { id, name, parentId, created_at } = action.payload;
+            const newFolder = {
+                id,
+                type: "Folder",
+                name,
+                parentId,
+                created_at,
+            };
+            state.folders = [newFolder, ...state.folders];
         },
         remove: (state, action) => {
-            return {
-                ...state,
-                folders: state.folders.filter(
-                    (folder) => folder.id !== action.payload.id
-                ),
-            };
+            state.folders = state.folders.filter(
+                (folder) => folder.id !== action.payload.id
+            );
         },
         rename: (state, action) => {
             const folder = state.folders.find(
                 (folder) => folder.id === action.payload.id
             );
             if (folder) {
-                folder.name = action.payload.newName;
+                folder.name = action.payload.name;
             }
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.folders = action.payload.folder;
+        });
+    },
 });
 
-export const folderReducer = folders.reducer;
+export const { add, remove, rename } = folderSlice.actions;
+export default folderSlice.reducer;

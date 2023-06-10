@@ -9,11 +9,12 @@ import {
     ActionSheetIOS,
     Keyboard,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { remove, rename } from "../reducers/folderReducer";
 import axios from "axios";
 
-import { Entypo } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/folderReducer";
+
+import { Icon } from "@rneui/themed";
 import MenuModal from "./modal/MenuModal";
 
 function Folder({ id, name, onPress }) {
@@ -51,17 +52,20 @@ function Folder({ id, name, onPress }) {
         }
     }, [isRenaming]);
 
-    const handleRenameSubmit = () => {
+    const handleRenameSubmit = ({ nativeEvent }) => {
+        const { text } = nativeEvent;
         const renameFolder = {
             id,
-            newName: newName.trim(),
+            name: text.trim(),
         };
 
         axios
-            .put(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/
-            /${id}`, renameFolder)
+            .put(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/PutFolder/${id}/`,
+                renameFolder
+            )
             .then((response) => {
-                dispatch(rename(response.data)); 
+                dispatch(rename(response.data));
             })
             .catch((error) => {
                 console.log("Error renaming folder:", error);
@@ -73,8 +77,9 @@ function Folder({ id, name, onPress }) {
 
     const deleteFolder = () => {
         axios
-            .delete(`https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/FolderList/
-            /${id}`)
+            .delete(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteFolder/${id}`
+            )
             .then(() => {
                 const removeFolder = {
                     id,
@@ -88,16 +93,21 @@ function Folder({ id, name, onPress }) {
 
     return (
         <TouchableOpacity
-            activeOpacity={0.6}
+            activeOpacity="0.6"
             style={styles.folder}
             onPress={onPress}
         >
             <TouchableOpacity
-                activeOpacity={0.6}
+                activeOpacity="0.6"
                 style={styles.folderMenu}
                 onPress={modalOpen}
             >
-                <Entypo name="dots-three-vertical" size={18} color="#777" />
+                <Icon
+                    name="dots-three-vertical"
+                    type="entypo"
+                    size={18}
+                    color="#777"
+                />
                 <MenuModal
                     id={id}
                     type="folder"
@@ -143,7 +153,7 @@ const styles = StyleSheet.create({
     },
     folderName: {
         fontSize: 15,
-        fontWeight: "600",
+        fontWeight: 600,
         marginTop: 5,
     },
     renameInput: {

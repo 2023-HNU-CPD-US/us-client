@@ -1,11 +1,10 @@
 import { combineReducers } from "redux";
-
-import { noteReducer } from "./noteReducer";
-import { folderReducer } from "./folderReducer";
+import folderReducer from "./folderReducer";
+import noteReducer from "./noteReducer";
 
 const rootReducer = combineReducers({
-    noteReducer,
-    folderReducer,
+    folder: folderReducer,
+    note: noteReducer,
 });
 
 export default rootReducer;

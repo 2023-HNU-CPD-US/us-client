@@ -6,21 +6,40 @@ import {
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
+    Text,
+    Modal,
+    Button,
 } from "react-native";
 
 import { Icon } from "@rneui/themed";
 
 function Write({ navigation, route }) {
-    const { serverResponse } = route?.params;
+    const { serverResponse, parentId } = route?.params || {};
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 
     useEffect(() => {
         if (serverResponse?.result) {
             setContent(serverResponse.result);
         }
     }, [serverResponse?.result]);
+
+    const handleSave = () => {
+        if (title.trim() === "" || content.trim() === "") {
+            setErrorMessage("제목과 내용을 입력해 주세요.");
+            setIsErrorModalVisible(true);
+            return;
+        }
+
+        navigation.navigate("저장", { title, content, parentId });
+    };
+
+    const closeModal = () => {
+        setIsErrorModalVisible(false); // 팝업 닫기
+    };
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -73,7 +92,7 @@ function Write({ navigation, route }) {
                             borderTopRightRadius: 10,
                             borderBottomRightRadius: 10,
                         }}
-                        onPress={() => navigation.navigate("저장")}
+                        onPress={handleSave}
                     >
                         <View>
                             <Icon
@@ -85,6 +104,22 @@ function Write({ navigation, route }) {
                         </View>
                     </TouchableOpacity>
                 </View>
+
+                {/* 팝업 컴포넌트 */}
+                <Modal
+                    visible={isErrorModalVisible}
+                    animationType="fade"
+                    transparent
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.errorMessage}>
+                                {errorMessage}
+                            </Text>
+                            <Button title="확인" onPress={closeModal} />
+                        </View>
+                    </View>
+                </Modal>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -136,4 +171,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 20,
     },
+
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        backgroundColor: "white",
+        padding: 30,
+        borderRadius: 10,
+    },
+    errorMessage: { marginBottom: 20 },
 });

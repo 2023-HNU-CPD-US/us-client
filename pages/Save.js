@@ -33,7 +33,6 @@ function Save({ navigation, route }) {
                 newNote
             )
             .then((response) => {
-                console.log("response: " + response.data);
                 dispatch(add(response.data));
                 setLoading(false);
                 setCompleted(true);

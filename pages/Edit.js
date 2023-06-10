@@ -38,7 +38,6 @@ function Edit({ navigation, route }) {
             name: title.trim(),
             content: content.trim(),
         };
-        console.log(editNote);
 
         axios
             .put(
@@ -54,10 +53,6 @@ function Edit({ navigation, route }) {
             .finally(() => {
                 navigation.navigate("노트", { selected: selected });
             });
-
-        // TODO: Save the updated title and content
-        console.log("Title:", title);
-        console.log("Content:", content);
     };
 
     const closeModal = () => {

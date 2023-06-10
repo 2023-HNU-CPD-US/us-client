@@ -90,7 +90,6 @@ function Home({ navigation }) {
     // 노트 변경 시 해당 노트로 이동
     useEffect(() => {
         if (selectedNote !== null) {
-            console.log(selectedNote);
             navigation.navigate("노트", { selected: selectedNote });
         }
     }, [selectedNote, navigation]);

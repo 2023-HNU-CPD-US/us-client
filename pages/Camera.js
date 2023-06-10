@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import { View, Text, ActivityIndicator, Button } from "react-native";
+import ImagePicker from "react-native-image-picker";
 import axios from "axios";
 
 function ExpoCamera({ navigation }) {
@@ -9,47 +9,26 @@ function ExpoCamera({ navigation }) {
         ImagePicker.useMediaLibraryPermissions();
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            const { status } =
-                await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== "granted") {
-                alert("권한이 없습니다.");
-                navigation.navigate("작성하기");
+    const selectImage = () => {
+        const options = {
+            title: "이미지 선택",
+            mediaType: "photo",
+            quality: 1,
+            maxWidth: 500,
+            maxHeight: 500,
+        };
+
+        ImagePicker.launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log("Image selection cancelled");
+            } else if (response.error) {
+                console.log("ImagePicker Error: ", response.error);
             } else {
-                selectImage();
+                const { uri } = response;
+                setImageUrl(uri);
+                uploadImage(uri);
             }
-        })();
-    }, []);
-
-    const selectImage = async () => {
-        try {
-            if (!status?.granted) {
-                const permission = await requestPermission();
-                if (!permission.granted) {
-                    navigation.goBack();
-                    return;
-                }
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 1,
-            });
-
-            if (!result.canceled) {
-                const selectedAsset = result.assets[0];
-                setImageUrl(selectedAsset.uri); // Set the selected image URL
-                await uploadImage(selectedAsset.uri); // Call uploadImage
-            } else {
-                navigation.navigate("작성하기");
-            }
-        } catch (error) {
-            console.error(
-                "There was an error with the image selection: ",
-                error
-            );
-        }
+        });
     };
 
     const uploadImage = async (imageUri) => {
@@ -85,6 +64,7 @@ function ExpoCamera({ navigation }) {
             setIsLoading(false);
         }
     };
+
     return (
         <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -95,7 +75,9 @@ function ExpoCamera({ navigation }) {
                     <Text style={{ marginTop: 10 }}>내용을 요약 중입니다.</Text>
                 </>
             ) : (
-                <View></View>
+                <View>
+                    <Button title="이미지 선택" onPress={selectImage} />
+                </View>
             )}
         </View>
     );

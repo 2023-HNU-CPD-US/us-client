@@ -44,7 +44,6 @@ function Home({ navigation }) {
             return item.parentId === null;
         })
     );
-    console.log(noteData);
 
     useEffect(() => {
         setData(

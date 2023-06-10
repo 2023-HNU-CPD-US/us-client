@@ -8,12 +8,14 @@ import {
     ActionSheetIOS,
 } from "react-native";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+
 import { remove, rename } from "../reducers/noteReducer";
 
 import { Icon } from "@rneui/themed";
 import MenuModal from "./modal/MenuModal";
 
-const MAX_LENGTH = 55; // 최대 글자수를 원하는 길이로 설정
+const MAX_LENGTH = 55;
 
 function Note({ id, name, content, onPress }) {
     const [isMenuModalVisible, setMenuModalVisible] = useState(false);
@@ -36,10 +38,7 @@ function Note({ id, name, content, onPress }) {
                     if (buttonIndex === 0) {
                         setisRenameing(true);
                     } else if (buttonIndex === 1) {
-                        const removeNote = {
-                            id,
-                        };
-                        dispatch(remove(removeNote));
+                        deleteNote();
                     }
                 }
             );
@@ -56,11 +55,39 @@ function Note({ id, name, content, onPress }) {
         const { text } = nativeEvent;
         const renameNote = {
             id,
-            newName: text,
+            name: text.trim(),
         };
-        dispatch(rename(renameNote));
 
-        setisRenameing(false);
+        axios
+            .put(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/EditName_Text/${id}/`,
+                renameNote
+            )
+            .then((response) => {
+                dispatch(rename(response.data));
+            })
+            .catch((error) => {
+                console.log("Error renaming note:", error);
+            })
+            .finally(() => {
+                setisRenameing(false);
+            });
+    };
+
+    const deleteNote = () => {
+        axios
+            .delete(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteText/${id}`
+            )
+            .then(() => {
+                const removeNote = {
+                    id,
+                };
+                dispatch(remove(removeNote));
+            })
+            .catch((error) => {
+                console.log("Error deleting note:", error);
+            });
     };
 
     return (

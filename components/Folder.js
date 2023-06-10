@@ -58,7 +58,6 @@ function Folder({ id, name, onPress }) {
             id,
             name: text.trim(),
         };
-        console.log(renameFolder);
 
         axios
             .put(

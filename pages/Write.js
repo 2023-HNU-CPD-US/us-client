@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         flex: 12,
         backgroundColor: "white",
         paddingHorizontal: 15,
-        paddingBottom: 15,
+        paddingBottom: 100,
     },
     contentInput: {
         height: "100%",
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     menu: {
         position: "absolute",
         left: "0%",
-        bottom: 10,
+        bottom: 20,
         flexDirection: "row",
         shadowColor: "#000",
         shadowOpacity: 0.06,

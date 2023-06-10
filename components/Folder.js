@@ -39,10 +39,7 @@ function Folder({ id, name, onPress }) {
                     if (buttonIndex === 0) {
                         setisRenameing(true);
                     } else if (buttonIndex === 1) {
-                        const removeFolder = {
-                            id,
-                        };
-                        dispatch(remove(removeFolder));
+                        deleteFolder();
                     }
                 }
             );
@@ -76,6 +73,22 @@ function Folder({ id, name, onPress }) {
             })
             .finally(() => {
                 setisRenameing(false);
+            });
+    };
+
+    const deleteFolder = () => {
+        axios
+            .delete(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteFolder/${id}`
+            )
+            .then(() => {
+                const removeFolder = {
+                    id,
+                };
+                dispatch(remove(removeFolder));
+            })
+            .catch((error) => {
+                console.log("Error deleting folder:", error);
             });
     };
 

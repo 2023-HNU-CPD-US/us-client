@@ -10,7 +10,16 @@ const notes = createSlice({
     initialState,
     reducers: {
         add: (state, action) => {
-            // state.notes.unshift({ text: action.payload.text, id: action.payload.id });
+            const { id, name, content, parentId, created_at } = action.payload;
+            const newNote = {
+                id,
+                type: "Text",
+                name,
+                content,
+                parentId,
+                created_at,
+            };
+            state.notes = [newNote, ...state.notes];
         },
         remove: (state, action) => {
             state.notes = state.notes.filter(

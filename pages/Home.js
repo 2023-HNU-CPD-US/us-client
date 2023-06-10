@@ -287,6 +287,7 @@ function Home({ navigation }) {
                     onPress={() =>
                         navigation.navigate("작성하기", {
                             serverResponse: null,
+                            parentId: currentFolder,
                         })
                     }
                 >

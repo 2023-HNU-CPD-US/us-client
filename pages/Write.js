@@ -34,7 +34,7 @@ function Write({ navigation, route }) {
             return;
         }
 
-        navigation.navigate("저장", { title, content, parentId });
+        navigation.navigate("저장하기", { title, content, parentId });
     };
 
     const closeModal = () => {

@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, {
+    useState,
+    useCallback,
+    useEffect,
+    useRef,
+    useMemo,
+} from "react";
 import {
     StyleSheet,
     View,
@@ -21,14 +27,16 @@ import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
     // Redux store에서 데이터 선택
-    const folderData = useSelector((state) =>
-        state.folder.folders
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name))
-    );
-    const noteData = useSelector((state) =>
-        state.note.notes.slice().sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const folderState = useSelector((state) => state.folder.folders);
+    const noteState = useSelector((state) => state.note.notes);
+
+    const folderData = useMemo(() => {
+        return [...folderState].sort((a, b) => a.name.localeCompare(b.name));
+    }, [folderState]);
+
+    const noteData = useMemo(() => {
+        return [...noteState].sort((a, b) => a.name.localeCompare(b.name));
+    }, [noteState]);
 
     // 상태 변수들
     const [data, setData] = useState(
@@ -36,6 +44,16 @@ function Home({ navigation }) {
             return item.parentId === null;
         })
     );
+    console.log(noteData);
+
+    useEffect(() => {
+        setData(
+            [...folderData, ...noteData].filter((item) => {
+                return item.parentId === null;
+            })
+        );
+    }, [folderData, noteData]);
+
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -82,15 +100,18 @@ function Home({ navigation }) {
     );
 
     // 노트 선택 처리 함수
+    const shouldNavigateToNote = useRef(false);
     const handleNotePress = (noteId) => {
         const note = noteData.find((note) => note.id === noteId);
         setSelectedNote(note);
+        shouldNavigateToNote.current = true;
     };
 
     // 노트 변경 시 해당 노트로 이동
     useEffect(() => {
-        if (selectedNote !== null) {
+        if (selectedNote !== null && shouldNavigateToNote.current) {
             navigation.navigate("노트", { selected: selectedNote });
+            shouldNavigateToNote.current = false; // 네비게이션 후 다시 false로 변경
         }
     }, [selectedNote, navigation]);
 

@@ -27,10 +27,10 @@ const notes = createSlice({
             );
         },
         rename: (state, action) => {
-            const { id, newName } = action.payload;
+            const { id, name } = action.payload;
             const note = state.notes.find((note) => note.id === id);
             if (note) {
-                note.name = newName;
+                note.name = name;
             }
         },
         update: (state, action) => {

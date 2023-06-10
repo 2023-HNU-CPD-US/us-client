@@ -90,13 +90,29 @@ function Home({ navigation }) {
     // 폴더 선택 처리 함수
     const handleFolderPress = useCallback(
         (folderId) => {
-            const filteredData = [...folderData, ...noteData].filter(
+            let filteredFolders = folderData.filter(
                 (item) => item.parentId === folderId
             );
-            setData(filteredData);
+            let filteredNotes = noteData.filter(
+                (item) => item.parentId === folderId
+            );
+
+            if (sortOption === "name") {
+                filteredFolders.sort((a, b) => a.name.localeCompare(b.name));
+                filteredNotes.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortOption === "date") {
+                filteredFolders.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                );
+                filteredNotes.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                );
+            }
+
+            setData([...filteredFolders, ...filteredNotes]);
             setCurrentFolder(folderId);
         },
-        [folderData, noteData]
+        [folderData, noteData, sortOption]
     );
 
     // 노트 선택 처리 함수
@@ -127,6 +143,13 @@ function Home({ navigation }) {
             }
         }
     }, [currentFolder, folderData, handleFolderPress]);
+
+    // 정렬 옵션에 따라 데이터를 정렬
+    useEffect(() => {
+        if (currentFolder) {
+            handleFolderPress(currentFolder);
+        }
+    }, [sortOption, currentFolder]);
 
     // 폴더와 노트의 쌍을 렌더링
     const renderPairs = (renderData) => {

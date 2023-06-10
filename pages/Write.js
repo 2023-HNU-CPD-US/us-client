@@ -105,7 +105,6 @@ function Write({ navigation, route }) {
                     </TouchableOpacity>
                 </View>
 
-                {/* 팝업 컴포넌트 */}
                 <Modal
                     visible={isErrorModalVisible}
                     animationType="fade"

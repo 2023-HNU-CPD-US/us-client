@@ -4,7 +4,7 @@
         "slug": "us-client",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/icon.png",
+        "icon": "./assets/logo.png",
         "userInterfaceStyle": "light",
         "splash": {
             "image": "./assets/splash.png",
@@ -13,12 +13,19 @@
         },
         "assetBundlePatterns": ["**/*"],
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.soprue.usclient"
         },
         "android": {
             "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
+                "foregroundImage": "./assets/logo.png",
                 "backgroundColor": "#ffffff"
+            },
+            "package": "com.soprue.usclient"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "9c682c7e-e369-47a8-8ff2-b7505fdc70da"
             }
         }
     }

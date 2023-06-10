@@ -5,7 +5,7 @@ const Loading = () => {
     return (
         <View style={styles.container}>
             <Image
-                source={require("../assets/logo.png")}
+                source={require("../assets/splash.png")}
                 style={styles.image}
                 resizeMode="contain"
             />
@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     image: {
-        width: 200, // 이미지의 너비 조절
-        height: 200, // 이미지의 높이 조절
+        width: "100%",
+        height: "100%",
     },
 });
 

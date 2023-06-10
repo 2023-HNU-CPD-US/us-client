@@ -12,6 +12,7 @@ import HomeScreen from "./pages/Home";
 import WriteScreen from "./pages/Write";
 import SaveScreen from "./pages/Save";
 import CameraScreen from "./pages/Camera";
+import ReadScreen from "./pages/Read";
 import Loading from "./components/Loading";
 
 import { fetchData } from "./actions";
@@ -80,6 +81,13 @@ export default function App() {
                         }}
                     />
                     <Stack.Screen name="카메라" component={CameraScreen} />
+                    <Stack.Screen
+                        name="노트"
+                        component={ReadScreen}
+                        options={{
+                            headerTitle: (props) => <LogoTitle {...props} />,
+                        }}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

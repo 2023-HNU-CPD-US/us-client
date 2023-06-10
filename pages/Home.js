@@ -20,6 +20,7 @@ import SortModal from "../components/modal/SortModal";
 import NoDataImage from "../components/NoDataImage";
 
 function Home({ navigation }) {
+    // Redux store에서 데이터 선택
     const folderData = useSelector((state) =>
         state.folder.folders
             .slice()
@@ -28,31 +29,32 @@ function Home({ navigation }) {
     const noteData = useSelector((state) =>
         state.note.notes.slice().sort((a, b) => a.name.localeCompare(b.name))
     );
-    console.log(folderData);
 
+    // 상태 변수들
     const [data, setData] = useState(
         [...folderData, ...noteData].filter((item) => {
             return item.parentId === null;
         })
     );
-
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
     const [sortOption, setSortOption] = useState("name");
+    const [selectedNote, setSelectedNote] = useState(null);
 
     const dispatch = useDispatch();
+
+    // 새 폴더 추가 함수
     const handleAddFolder = () => {
         let currentDate = new Date();
         let formattedDate = currentDate.toISOString().slice(0, -1);
 
         const newFolder = {
-            id: Date.now(), // 임의의 고유 ID 생성
+            id: Date.now(),
             name: "새 폴더",
-            parentId: currentFolder, // 현재 폴더를 부모로 설정
+            parentId: currentFolder,
             created_at: formattedDate,
         };
-        // dispatch(add(newFolder));
 
         axios
             .post(
@@ -63,10 +65,11 @@ function Home({ navigation }) {
                 dispatch(add(response.data));
             })
             .catch((error) => {
-                console.log("Error adding folder:", error);
+                console.log("폴더 추가 에러:", error);
             });
     };
 
+    // 폴더 선택 처리 함수
     const handleFolderPress = useCallback(
         (folderId) => {
             const filteredData = [...folderData, ...noteData].filter(
@@ -78,6 +81,21 @@ function Home({ navigation }) {
         [folderData, noteData]
     );
 
+    // 노트 선택 처리 함수
+    const handleNotePress = (noteId) => {
+        const note = noteData.find((note) => note.id === noteId);
+        setSelectedNote(note);
+    };
+
+    // 노트 변경 시 해당 노트로 이동
+    useEffect(() => {
+        if (selectedNote !== null) {
+            console.log(selectedNote);
+            navigation.navigate("노트", { selected: selectedNote });
+        }
+    }, [selectedNote, navigation]);
+
+    // 부모 폴더로 이동하는 함수
     const handleGoBack = useCallback(() => {
         if (currentFolder) {
             const parentFolder = folderData.find(
@@ -90,6 +108,7 @@ function Home({ navigation }) {
         }
     }, [currentFolder, folderData, handleFolderPress]);
 
+    // 폴더와 노트의 쌍을 렌더링
     const renderPairs = (renderData) => {
         const pairs = [];
         if (renderData.length) {
@@ -114,6 +133,7 @@ function Home({ navigation }) {
                                 id={first.id}
                                 name={first.name}
                                 content={first.content}
+                                onPress={() => handleNotePress(first.id)}
                             />
                         )}
                         {second && (
@@ -133,6 +153,9 @@ function Home({ navigation }) {
                                         id={second.id}
                                         name={second.name}
                                         content={second.content}
+                                        onPress={() =>
+                                            handleNotePress(second.id)
+                                        }
                                     />
                                 )}
                             </>
@@ -148,6 +171,7 @@ function Home({ navigation }) {
         return pairs;
     };
 
+    // 정렬 옵션에 따라 데이터를 정렬
     useEffect(() => {
         const sortedFolders = folderData
             .filter((item) => item.parentId === currentFolder)
@@ -172,6 +196,7 @@ function Home({ navigation }) {
         setData(sortedData);
     }, [sortOption]);
 
+    // 모달 열기 처리
     const modalOpen = useCallback(() => {
         if (Platform.OS === "android") {
             setModalVisible(true);
@@ -192,6 +217,7 @@ function Home({ navigation }) {
         }
     }, []);
 
+    // 검색어 제출 처리
     const handleSearchSubmit = () => {
         if (searchText === "") {
             setData(
@@ -209,18 +235,11 @@ function Home({ navigation }) {
 
     return (
         <View style={styles.home}>
-            <View
-                style={{
-                    paddingHorizontal: 20,
-                    paddingTop: 20,
-                    flexDirection: "row",
-                    alignItems: "center",
-                }}
-            >
+            <View style={styles.searchBar}>
                 {currentFolder && (
                     <TouchableOpacity
                         onPress={handleGoBack}
-                        style={{ marginRight: 10 }}
+                        style={styles.backButton}
                     >
                         <Icon
                             name="arrow-left"
@@ -231,28 +250,19 @@ function Home({ navigation }) {
                     </TouchableOpacity>
                 )}
                 <TextInput
-                    style={{
-                        flex: 9,
-                        height: 40,
-                        backgroundColor: "white",
-                        paddingHorizontal: 10,
-                        borderRadius: 5,
-                    }}
+                    style={styles.searchInput}
                     placeholder="검색어를 입력하세요."
                     onChangeText={(text) => setSearchText(text)}
                     onSubmitEditing={handleSearchSubmit}
                     returnKeyType="search"
                     value={searchText}
                 />
-                <TouchableOpacity style={{ flex: 1 }} onPress={modalOpen}>
+                <TouchableOpacity style={styles.sortButton} onPress={modalOpen}>
                     <Icon
                         name="sort-amount-desc"
                         type="font-awesome"
                         size={20}
                         color="#555"
-                        style={{
-                            textAlign: "center",
-                        }}
                     />
                     <SortModal
                         visible={modalVisible}
@@ -313,6 +323,25 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
     },
+    searchBar: {
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    backButton: {
+        marginRight: 10,
+    },
+    searchInput: {
+        flex: 9,
+        height: 40,
+        backgroundColor: "white",
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    sortButton: {
+        flex: 1,
+    },
     list: {
         width: "100%",
         paddingHorizontal: 20,
@@ -328,7 +357,6 @@ const styles = StyleSheet.create({
         left: "0%",
         bottom: 10,
         flexDirection: "row",
-        // borderRadius: 10,
         shadowColor: "#000",
         shadowOpacity: 0.06,
         shadowOffset: {

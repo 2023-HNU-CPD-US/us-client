@@ -1,7 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+} from "react-native";
 
-function Read({ route }) {
+import { Icon } from "@rneui/themed";
+
+function Read({ navigation, route }) {
     const { selected } = route.params;
 
     const formattedDate = new Date(selected.created_at).toLocaleDateString(
@@ -24,6 +32,10 @@ function Read({ route }) {
 
     const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
+    const handleEdit = () => {
+        navigation.navigate("수정하기", { selected });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{selected.name}</Text>
@@ -31,6 +43,9 @@ function Read({ route }) {
             <ScrollView style={styles.contentContainer}>
                 <Text style={styles.content}>{selected.content}</Text>
             </ScrollView>
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                <Icon name="edit" type="feather" size={20} color="#fff" />
+            </TouchableOpacity>
         </View>
     );
 }
@@ -56,6 +71,24 @@ const styles = StyleSheet.create({
     },
     content: {
         fontSize: 16,
+    },
+    editButton: {
+        width: 50,
+        height: 50,
+        alignSelf: "flex-end",
+        marginTop: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        backgroundColor: "#0D6EfD",
+        borderRadius: 50,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowOffset: {
+            width: 10,
+            height: 10,
+        },
     },
 });
 

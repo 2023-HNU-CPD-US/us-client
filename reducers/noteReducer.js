@@ -34,6 +34,14 @@ const notes = createSlice({
                 note.name = action.payload.newName;
             }
         },
+        update: (state, action) => {
+            const { id, name, content } = action.payload;
+            const note = state.notes.find((note) => note.id === id);
+            if (note) {
+                note.name = name;
+                note.content = content;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchData.fulfilled, (state, action) => {
@@ -42,5 +50,5 @@ const notes = createSlice({
     },
 });
 
-export const { add, remove, rename } = notes.actions;
+export const { add, remove, rename, update } = notes.actions;
 export default notes.reducer;

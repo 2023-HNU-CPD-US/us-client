@@ -13,6 +13,7 @@ import WriteScreen from "./pages/Write";
 import SaveScreen from "./pages/Save";
 import CameraScreen from "./pages/Camera";
 import ReadScreen from "./pages/Read";
+import EditScreen from "./pages/Edit";
 import Loading from "./components/Loading";
 
 import { fetchData } from "./actions";
@@ -74,7 +75,14 @@ export default function App() {
                         }}
                     />
                     <Stack.Screen
-                        name="저장"
+                        name="수정하기"
+                        component={EditScreen}
+                        options={{
+                            headerTitle: (props) => <LogoTitle {...props} />,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="저장하기"
                         component={SaveScreen}
                         options={{
                             headerTitle: (props) => <LogoTitle {...props} />,

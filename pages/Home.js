@@ -45,14 +45,6 @@ function Home({ navigation }) {
         })
     );
 
-    useEffect(() => {
-        setData(
-            [...folderData, ...noteData].filter((item) => {
-                return item.parentId === null;
-            })
-        );
-    }, [folderData, noteData]);
-
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -60,6 +52,14 @@ function Home({ navigation }) {
     const [selectedNote, setSelectedNote] = useState(null);
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setData(
+            [...folderData, ...noteData].filter((item) => {
+                return item.parentId === currentFolder;
+            })
+        );
+    }, [folderData, noteData]);
 
     // 새 폴더 추가 함수
     const handleAddFolder = () => {

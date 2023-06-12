@@ -39,12 +39,6 @@ function Home({ navigation }) {
     }, [noteState]);
 
     // 상태 변수들
-    const [data, setData] = useState(
-        [...folderData, ...noteData].filter((item) => {
-            return item.parentId === null;
-        })
-    );
-
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -52,6 +46,12 @@ function Home({ navigation }) {
     const [selectedNote, setSelectedNote] = useState(null);
 
     const dispatch = useDispatch();
+
+    const [data, setData] = useState(
+        [...folderData, ...noteData].filter((item) => {
+            return item.parentId === currentFolder;
+        })
+    );
 
     useEffect(() => {
         setData(

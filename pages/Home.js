@@ -38,7 +38,7 @@ function Home({ navigation }) {
         return [...noteState].sort((a, b) => a.name.localeCompare(b.name));
     }, [noteState]);
 
-    // 상태 변수들
+    // 상태 변수
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);

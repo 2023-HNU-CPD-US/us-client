@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#f1f3f5",
         borderRadius: 10,
         padding: 10,
+        fontSize: 18,
     },
     contentWrap: {
         flex: 12,
@@ -150,6 +151,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingTop: 15,
         paddingHorizontal: 10,
+        fontSize: 18,
+        lineHeight: 24,
     },
     menu: {
         position: "absolute",

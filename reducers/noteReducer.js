@@ -1,25 +1,53 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchData } from "../actions/index";
 
 const initialState = {
-    notes: [
-        { id: 1, type: "note", title: "Note 1", content: "Content 1" },
-        { id: 2, type: "note", title: "Note 2", content: "Content 2" },
-    ],
+    notes: [],
 };
 
 const notes = createSlice({
-    name: "noteReducer",
+    name: "note",
     initialState,
     reducers: {
         add: (state, action) => {
-            // state.unshift({ text: action.payload.text, id: action.payload.id }); // redux toolkit을 사용하면 state를 mutate해도 됨
+            const { id, name, content, parentId, created_at } = action.payload;
+            const newNote = {
+                id,
+                type: "Text",
+                name,
+                content,
+                parentId,
+                created_at,
+            };
+            state.notes = [newNote, ...state.notes];
         },
         remove: (state, action) => {
-            // return state.filter(toDo => toDo.id !== action.payload.id);
+            state.notes = state.notes.filter(
+                (note) => note.id !== action.payload.id
+            );
         },
-        rename: (state, action) => {},
+        rename: (state, action) => {
+            const { id, name } = action.payload;
+            const note = state.notes.find((note) => note.id === id);
+            if (note) {
+                note.name = name;
+            }
+        },
+        update: (state, action) => {
+            const { id, name, content } = action.payload;
+            const note = state.notes.find((note) => note.id === id);
+            if (note) {
+                note.name = name;
+                note.content = content;
+            }
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.notes = action.payload.text;
+        });
     },
 });
 
-export const { add, remove, rename } = notes.actions;
-export const noteReducer = notes.reducer;
+export const { add, remove, rename, update } = notes.actions;
+export default notes.reducer;

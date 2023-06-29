@@ -1,31 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 
-function Save({ navigation }) {
+import { Icon } from "@rneui/themed";
+import { useDispatch } from "react-redux";
+import { add } from "../reducers/noteReducer";
+
+function Save({ navigation, route }) {
+    let { title, content, parentId } = route?.params;
+    parentId = parentId == undefined ? null : parentId;
+
     const [loading, setLoading] = useState(true);
     const [completed, setCompleted] = useState(false);
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-            setCompleted(true);
-            setTimeout(() => {
-                navigation.navigate("홈");
-            }, 1000);
-        }, 3000);
-    }, []);
+        let currentDate = new Date();
+        let formattedDate = currentDate.toISOString().slice(0, -1);
+
+        const newNote = {
+            id: Date.now(),
+            name: title,
+            content,
+            created_at: formattedDate,
+            parentId,
+        };
+        console.log(newNote);
+
+        axios
+            .post(
+                "https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/SaveText/",
+                newNote
+            )
+            .then((response) => {
+                dispatch(add(response.data));
+                setLoading(false);
+                setCompleted(true);
+                setTimeout(() => {
+                    navigation.navigate("홈");
+                }, 1000);
+            })
+            .catch((error) => {
+                console.log("노트 추가 에러:", error);
+            });
+    }, [title, content]);
 
     return (
         <View style={styles.container}>
             {loading ? (
                 <View style={styles.loading}>
-                    <ActivityIndicator size="large" color="black" />
+                    <ActivityIndicator size="large" color="gray" />
                     <Text style={styles.loadingText}>저장 중입니다.</Text>
                 </View>
             ) : completed ? (
                 <View style={styles.completed}>
-                    <Ionicons name="checkmark-circle" size={72} color="green" />
+                    <Icon
+                        name="check-circle"
+                        type="feather"
+                        size={40}
+                        color="green"
+                    />
                     <Text style={styles.completedText}>
                         저장이 완료되었습니다!
                     </Text>
@@ -51,16 +86,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     loadingText: {
-        marginTop: 20,
-        fontSize: 22,
+        marginTop: 10,
     },
     completed: {
         alignItems: "center",
         justifyContent: "center",
     },
     completedText: {
-        marginTop: 20,
-        fontSize: 22,
+        marginTop: 10,
         color: "green",
     },
     loaded: {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
     View,
     Text,
@@ -9,17 +9,26 @@ import {
     ActionSheetIOS,
     Keyboard,
 } from "react-native";
+import axios from "axios";
 
-import { Entypo } from "@expo/vector-icons";
-import MenuModal from "./MenuModal";
+import { useDispatch } from "react-redux";
+import { remove, rename } from "../reducers/folderReducer";
 
-function Folder({ name }) {
-    const [modalVisible, setModalVisible] = useState(false);
+import { Icon } from "@rneui/themed";
+import MenuModal from "./modal/MenuModal";
+
+function Folder({ id, name, onPress }) {
+    const [isMenuModalVisible, setMenuModalVisible] = useState(false);
+    const [isRenaming, setisRenameing] = useState(false);
+    const [newName, setNewName] = useState(name);
+    const renameInputRef = useRef(null);
+
+    const dispatch = useDispatch();
 
     const modalOpen = useCallback(() => {
-        // setModalVisible(true);
+        // setMenuModalVisible(true);
         if (Platform.OS === "android") {
-            setModalVisible(true);
+            setMenuModalVisible(true);
         } else {
             ActionSheetIOS.showActionSheetWithOptions(
                 {
@@ -28,24 +37,83 @@ function Folder({ name }) {
                 },
                 (buttonIndex) => {
                     if (buttonIndex === 0) {
+                        setisRenameing(true);
                     } else if (buttonIndex === 1) {
+                        deleteFolder();
                     }
                 }
             );
         }
     }, []);
 
+    useEffect(() => {
+        if (isRenaming) {
+            if (renameInputRef.current) renameInputRef.current.focus();
+        }
+    }, [isRenaming]);
+
+    const handleRenameSubmit = ({ nativeEvent }) => {
+        const { text } = nativeEvent;
+        const renameFolder = {
+            id,
+            name: text.trim(),
+        };
+
+        axios
+            .put(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/PutFolder/${id}/`,
+                renameFolder
+            )
+            .then((response) => {
+                dispatch(rename(response.data));
+            })
+            .catch((error) => {
+                console.log("Error renaming folder:", error);
+            })
+            .finally(() => {
+                setisRenameing(false);
+            });
+    };
+
+    const deleteFolder = () => {
+        axios
+            .delete(
+                `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteFolder/${id}`
+            )
+            .then(() => {
+                const removeFolder = {
+                    id,
+                };
+                dispatch(remove(removeFolder));
+            })
+            .catch((error) => {
+                console.log("Error deleting folder:", error);
+            });
+    };
+
     return (
-        <TouchableOpacity activeOpacity="0.6" style={styles.folder}>
+        <TouchableOpacity
+            activeOpacity="0.6"
+            style={styles.folder}
+            onPress={onPress}
+        >
             <TouchableOpacity
                 activeOpacity="0.6"
                 style={styles.folderMenu}
                 onPress={modalOpen}
             >
-                <Entypo name="dots-three-vertical" size={18} color="#777" />
+                <Icon
+                    name="dots-three-vertical"
+                    type="entypo"
+                    size={18}
+                    color="#777"
+                />
                 <MenuModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
+                    id={id}
+                    type="folder"
+                    visible={isMenuModalVisible}
+                    onClose={() => setMenuModalVisible(false)}
+                    setisRenameing={setisRenameing}
                 />
             </TouchableOpacity>
             <View>
@@ -54,7 +122,17 @@ function Folder({ name }) {
                     resizeMode="contain"
                     source={require("../assets/folder.png")}
                 ></Image>
-                <Text style={styles.folderName}>{name}</Text>
+                {!isRenaming && <Text style={styles.folderName}>{name}</Text>}
+                {isRenaming && (
+                    <TextInput
+                        ref={renameInputRef}
+                        value={newName}
+                        style={styles.renameInput}
+                        returnKeyType="done"
+                        onChangeText={setNewName}
+                        onSubmitEditing={handleRenameSubmit}
+                    />
+                )}
             </View>
         </TouchableOpacity>
     );
@@ -76,6 +154,13 @@ const styles = StyleSheet.create({
     folderName: {
         fontSize: 15,
         fontWeight: 600,
+        marginTop: 5,
+    },
+    renameInput: {
+        height: 20,
+        borderRadius: 5,
+        backgroundColor: "#eee",
+        padding: 5,
         marginTop: 5,
     },
 });

@@ -1,7 +1,48 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Modal, View, Pressable, Text } from "react-native";
+import { useDispatch } from "react-redux";
+import axios from "axios";
 
-export default function SortModal({ visible, onClose }) {
+import {
+    remove as noteRemove,
+    rename as noteRename,
+} from "../../reducers/noteReducer";
+import {
+    remove as folderRemove,
+    rename as folderRename,
+} from "../../reducers/folderReducer";
+
+export default function MenuModal({
+    id,
+    type,
+    visible,
+    onClose,
+    setisRenameing,
+}) {
+    const dispatch = useDispatch();
+
+    const handleDelete = () => {
+        const remove = {
+            id,
+        };
+
+        if (type == "note") {
+            dispatch(noteRemove(remove));
+        } else {
+            axios
+                .delete(
+                    `https://port-0-us-server-das6e2dli8igkfo.sel4.cloudtype.app/DeleteFolder/${id}`
+                )
+                .then(() => {
+                    dispatch(folderRemove(remove));
+                    onClose();
+                })
+                .catch((error) => {
+                    console.log("Error deleting folder:", error);
+                });
+        }
+    };
+
     return (
         <Modal
             visible={visible}
@@ -19,19 +60,18 @@ export default function SortModal({ visible, onClose }) {
                         }}
                         android_ripple={{ color: "#eee" }}
                         onPress={() => {
+                            setisRenameing(true);
                             onClose();
                         }}
                     >
-                        <Text style={styles.actionText}>최신순</Text>
+                        <Text style={styles.actionText}>이름 변경</Text>
                     </Pressable>
                     <Pressable
                         style={styles.actionButton}
                         android_ripple={{ color: "#eee" }}
-                        onPress={() => {
-                            onClose();
-                        }}
+                        onPress={handleDelete}
                     >
-                        <Text style={styles.actionText}>이름순</Text>
+                        <Text style={styles.actionText}>삭제</Text>
                     </Pressable>
                 </View>
             </Pressable>

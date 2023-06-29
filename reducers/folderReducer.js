@@ -1,28 +1,45 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchData } from "../actions/index";
 
 const initialState = {
-    folders: [
-        { id: 1, type: "folder", name: "Food Recipes" },
-        { id: 2, type: "folder", name: "Project" },
-        { id: 3, type: "folder", name: "Secret" },
-        { id: 4, type: "folder", name: "Reference" },
-        { id: 5, type: "folder", name: "Test" },
-    ],
+    folders: [],
 };
 
-const folders = createSlice({
-    name: "folderReducer",
+const folderSlice = createSlice({
+    name: "folder",
     initialState,
     reducers: {
         add: (state, action) => {
-            // state.unshift({ text: action.payload.text, id: action.payload.id }); // redux toolkit을 사용하면 state를 mutate해도 됨
+            const { id, name, parentId, created_at } = action.payload;
+            const newFolder = {
+                id,
+                type: "Folder",
+                name,
+                parentId,
+                created_at,
+            };
+            state.folders = [newFolder, ...state.folders];
         },
         remove: (state, action) => {
-            // return state.filter(toDo => toDo.id !== action.payload.id);
+            state.folders = state.folders.filter(
+                (folder) => folder.id !== action.payload.id
+            );
         },
-        rename: (state, action) => {},
+        rename: (state, action) => {
+            const folder = state.folders.find(
+                (folder) => folder.id === action.payload.id
+            );
+            if (folder) {
+                folder.name = action.payload.name;
+            }
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.folders = action.payload.folder;
+        });
     },
 });
 
-export const { add, remove, rename } = folders.actions;
-export const folderReducer = folders.reducer;
+export const { add, remove, rename } = folderSlice.actions;
+export default folderSlice.reducer;

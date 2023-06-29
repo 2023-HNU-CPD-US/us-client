@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
     title: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "bold",
         marginBottom: 10,
     },
     date: {
-        fontSize: 12,
+        fontSize: 14,
         color: "#999",
         marginBottom: 10,
     },
@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        fontSize: 16,
+        fontSize: 18,
+        lineHeight: 24,
     },
     editButton: {
         width: 50,

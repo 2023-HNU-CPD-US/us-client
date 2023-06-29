@@ -38,21 +38,7 @@ function Home({ navigation }) {
         return [...noteState].sort((a, b) => a.name.localeCompare(b.name));
     }, [noteState]);
 
-    // 상태 변수들
-    const [data, setData] = useState(
-        [...folderData, ...noteData].filter((item) => {
-            return item.parentId === null;
-        })
-    );
-
-    useEffect(() => {
-        setData(
-            [...folderData, ...noteData].filter((item) => {
-                return item.parentId === null;
-            })
-        );
-    }, [folderData, noteData]);
-
+    // 상태 변수
     const [modalVisible, setModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -60,6 +46,20 @@ function Home({ navigation }) {
     const [selectedNote, setSelectedNote] = useState(null);
 
     const dispatch = useDispatch();
+
+    const [data, setData] = useState(
+        [...folderData, ...noteData].filter((item) => {
+            return item.parentId === currentFolder;
+        })
+    );
+
+    useEffect(() => {
+        setData(
+            [...folderData, ...noteData].filter((item) => {
+                return item.parentId === currentFolder;
+            })
+        );
+    }, [folderData, noteData]);
 
     // 새 폴더 추가 함수
     const handleAddFolder = () => {

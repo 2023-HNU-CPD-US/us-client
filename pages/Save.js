@@ -26,6 +26,7 @@ function Save({ navigation, route }) {
             created_at: formattedDate,
             parentId,
         };
+        console.log(newNote);
 
         axios
             .post(

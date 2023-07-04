@@ -4,9 +4,6 @@
 
 # US - Useful Summary
 
-<strong>US</strong>은 OCR 기능을 활용한 텍스트 정리 요약 어플입니다.
-<br> <br>
-
 ### 개발 배경
 현대 사회에서는 교재나 노트 필기와 같은 텍스트 자료가 많이 사용되고 있다.  
 그러나 이러한 자료들은 보통 방대하고 상세한 내용을 포함하고 있어서 효과적으로 활용하기 어렵다.  
@@ -14,6 +11,7 @@
  
 ### 사용 기술
 
+<img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white"> <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white"> <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
 #### Frontend
 <img src="https://img.shields.io/badge/reactnative-61DAFB?style=for-the-badge&logo=react&logoColor=white"> <img src="https://img.shields.io/badge/redux-764ABC?style=for-the-badge&logo=redux&logoColor=white"> <img src="https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"> <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
 #### Backend
@@ -21,7 +19,7 @@
 
 <br>
 
-## 스크린샷
+## 주요 화면 스크린샷
 
 | 설명      | 화면                                                    |
 | --------- | ------------------------------------------------------- |
@@ -37,3 +35,4 @@
 | Frontend Developer | Frontend Developer | Backend Developer | Backend Developer | Backend Developer |
 | ---------- | ---------- | ------ | ------ | ------ |
 | 김가희 | 백승권 | 김성도 | 엄찬민 | 이진수 |
+| UI/UX 설계 | 자료 조사 | Open AI API 관리 | Google Cloud Vision API 관리 | 데이터베이스 설계 |
